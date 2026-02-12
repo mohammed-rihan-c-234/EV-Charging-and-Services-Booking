@@ -45,6 +45,13 @@ class PartOrder(models.Model):
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="part_orders")
+    service_center = models.ForeignKey(
+        "service_center.ServiceCenter",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="part_orders",
+    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_CART)
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_UNPAID)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, blank=True, default="")

@@ -60,6 +60,13 @@ class ServiceBooking(models.Model):
         on_delete=models.PROTECT,
         related_name="bookings",
     )
+    vehicle = models.ForeignKey(
+        "vehicles.Vehicle",
+        on_delete=models.PROTECT,
+        related_name="service_bookings",
+        null=True,
+        blank=True,
+    )
 
     scheduled_for = models.DateTimeField(default=timezone.now)
     notes = models.TextField(blank=True)

@@ -22,6 +22,8 @@ class LoginView(auth_views.LoginView):
 
     def get_success_url(self):
         user = getattr(self.request, "user", None)
+        if user and user.is_authenticated and getattr(user, "is_staff", False):
+            return reverse("admin_portal:dashboard")
         try:
             if user and user.is_authenticated and getattr(user.profile, "role", "") == "service_center":  # type: ignore[attr-defined]
                 return reverse("service_center:dashboard")
@@ -57,8 +59,18 @@ def profile_edit(request):
         user_form = UserProfileEditForm(request.POST, instance=request.user)
         profile_form = ProfileEditForm(request.POST, instance=profile)
         if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
+            user = user_form.save(commit=False)
+            updated_profile = profile_form.save(commit=False)
+            if updated_profile.role == Profile.ROLE_SERVICE_CENTER:
+                user.first_name = ""
+                user.last_name = ""
+            else:
+                full_name = (updated_profile.full_name or "").strip()
+                name_parts = full_name.split(" ", 1)
+                user.first_name = name_parts[0] if name_parts else ""
+                user.last_name = name_parts[1] if len(name_parts) > 1 else ""
+            user.save()
+            updated_profile.save()
             messages.success(request, "Profile updated successfully.")
             return redirect("accounts:profile")
     else:

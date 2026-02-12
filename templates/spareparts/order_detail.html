@@ -93,6 +93,13 @@
                             </div>
                         </div>
 
+                        {% if order.service_center %}
+                            <div class="mb-4" style="padding: 1rem; background: #f8fafc; border-radius: 0.75rem;">
+                                <p class="text-muted small mb-1">Service Center</p>
+                                <p class="mb-0"><strong>{{ order.service_center.name }}</strong></p>
+                            </div>
+                        {% endif %}
+
                         <div class="mb-4" style="padding: 1rem; background: #f8fafc; border-radius: 0.75rem;">
                             <p class="text-muted small mb-2">Payment Status</p>
                             <span class="badge" style="background: {% if order.payment_status == 'paid' %}#10b981{% elif order.payment_status == 'pending_cash' %}#f59e0b{% else %}#ef4444{% endif %}; color: white; padding: 0.5rem 1rem; font-size: 0.875rem;">
@@ -137,4 +144,3 @@
 </section>
 
 {% endblock %}
-

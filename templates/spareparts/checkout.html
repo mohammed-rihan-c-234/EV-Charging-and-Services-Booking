@@ -186,6 +186,15 @@
                         <form method="post" id="paymentForm">
                             {% csrf_token %}
 
+                            <!-- Service Center Selection -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold d-block">Service Center <span class="text-danger">*</span></label>
+                                {{ form.service_center }}
+                                {% if form.service_center.errors %}<div class="invalid-feedback d-block">{{ form.service_center.errors|striptags }}</div>{% endif %}
+                            </div>
+
+                            <hr style="border-color: #e2e8f0;">
+
                             <!-- Payment Method Selection -->
                             <label class="form-label fw-semibold d-block">Payment Method <span class="text-danger">*</span></label>
                             <div class="row g-3 mb-4">

@@ -9,9 +9,15 @@ from django.utils import timezone
 from django.conf import settings
 from django.conf.urls.static import static
 
+admin.site.site_header = "EV Service Administration"
+admin.site.site_title = "EV Service Admin"
+admin.site.index_title = "Dashboard"
+
 # simple home view to keep things clear for non-technical users
 @login_required
 def home(request):
+    if getattr(request.user, "is_staff", False):
+        return redirect("admin_portal:dashboard")
     try:
         if getattr(request.user.profile, "role", "") == "service_center":  # type: ignore[attr-defined]
             return redirect("service_center:dashboard")
@@ -47,6 +53,8 @@ def home(request):
 
 def root(request):
     if request.user.is_authenticated:
+        if getattr(request.user, "is_staff", False):
+            return redirect("admin_portal:dashboard")
         try:
             if getattr(request.user.profile, "role", "") == "service_center":  # type: ignore[attr-defined]
                 return redirect("service_center:dashboard")
@@ -58,6 +66,7 @@ def root(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin-portal/', include('admin_portal.urls')),
     path('', root, name='root'),
     path('home/', home, name='home'),
     path('dashboard/', home, name='dashboard'),

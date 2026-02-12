@@ -1,52 +1,62 @@
-{% extends 'base.html' %}
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Chat - EV Service Platform{% endblock %}
+
 {% block content %}
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <div>
-      <h2 class="h4 mb-1">Chat</h2>
-      <p class="text-muted small mb-0">Session #{{ session.pk }}{% if session.user %} • {{ session.user.username }}{% endif %}</p>
-    </div>
-    <a href="{% url 'chatbox:list' %}" class="btn btn-sm btn-outline-primary">Back</a>
-  </div>
-
-  <div class="card border-0 shadow-sm mb-3">
-    <div class="card-body">
-      <div class="d-flex flex-column gap-2 overflow-auto" style="max-height: 52vh;">
-        {% for m in messages %}
-          {% if m.is_user %}
-            <div class="d-flex justify-content-end">
-              <div class="p-3 rounded-3 bg-primary text-white" style="max-width: 80%;">
-                <div class="fw-semibold mb-1">You</div>
-                <div style="white-space: pre-wrap;">{{ m.text }}</div>
-                <div class="small opacity-75 mt-2">{{ m.created_at }}</div>
-              </div>
-            </div>
-          {% else %}
-            <div class="d-flex justify-content-start">
-              <div class="p-3 rounded-3 bg-light" style="max-width: 80%;">
-                <div class="fw-semibold mb-1">Support</div>
-                <div style="white-space: pre-wrap;">{{ m.text }}</div>
-                <div class="small text-muted mt-2">{{ m.created_at }}</div>
-              </div>
-            </div>
-          {% endif %}
-        {% empty %}
-          <div class="alert alert-info mb-0">No messages yet. Send a message to start.</div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <h5>Send a message</h5>
-      <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-          <label class="form-label" for="id_message">Message</label>
-          {{ form.message }}
+<section style="background: linear-gradient(135deg, #cffafe 0%, #e0f2fe 50%, #dbeafe 100%); padding: 2.5rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="mb-1">Chat Session #{{ session.pk }}</h2>
+            <p class="text-muted mb-0">
+                {% if session.service_center %}{{ session.service_center.name }}{% else %}Service Center{% endif %}
+            </p>
         </div>
-        <button type="submit" class="btn btn-primary">Send</button>
-      </form>
+        <a href="{% url 'chatbox:list' %}" class="btn btn-outline-primary">Back</a>
     </div>
-  </div>
+</section>
+
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+            <div class="card-body" style="height: 420px; overflow-y: auto; background: #f8fafc;">
+                <div class="d-flex flex-column gap-3">
+                    {% for m in messages %}
+                        {% if m.is_user %}
+                            <div class="d-flex justify-content-end">
+                                <div class="p-3 rounded-3" style="max-width: 75%; background: var(--primary); color: white;">
+                                    <div class="fw-semibold mb-1">{% if is_center_user %}Customer{% else %}You{% endif %}</div>
+                                    <div style="white-space: pre-wrap;">{{ m.text }}</div>
+                                    <div class="small opacity-75 mt-1">{{ m.created_at|date:"M d, h:i A" }}</div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="d-flex justify-content-start">
+                                <div class="p-3 rounded-3 bg-white border" style="max-width: 75%;">
+                                    <div class="fw-semibold mb-1">
+                                        {% if session.service_center %}{{ session.service_center.name }}{% else %}Service Center{% endif %}
+                                    </div>
+                                    <div style="white-space: pre-wrap;">{{ m.text }}</div>
+                                    <div class="small text-muted mt-1">{{ m.created_at|date:"M d, h:i A" }}</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <div class="alert alert-info mb-0">No messages yet. Send a message to start the chat.</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer bg-white">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-2">{{ form.message }}</div>
+                    {% if form.message.errors %}<div class="invalid-feedback d-block">{{ form.message.errors|striptags }}</div>{% endif %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send"></i> Send
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

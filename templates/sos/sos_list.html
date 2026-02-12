@@ -76,13 +76,21 @@
                                 {% endif %}
 
                                 <!-- Location -->
-                                {% if alert.latitude and alert.longitude %}
+                                {% if alert.address or alert.latitude and alert.longitude %}
                                     <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
                                         <p class="text-muted small mb-2"><strong>Location:</strong></p>
-                                        <p class="mb-0">
-                                            <i class="bi bi-geo-alt-fill" style="color: var(--success);"></i>
-                                            {{ alert.latitude }}, {{ alert.longitude }}
-                                        </p>
+                                        {% if alert.address %}
+                                            <p class="mb-1">
+                                                <i class="bi bi-geo-alt-fill" style="color: var(--success);"></i>
+                                                {{ alert.address }}
+                                            </p>
+                                        {% endif %}
+                                        {% if alert.latitude and alert.longitude %}
+                                            <p class="mb-0 text-muted small">
+                                                <i class="bi bi-compass"></i>
+                                                {{ alert.latitude }}, {{ alert.longitude }}
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 {% endif %}
 

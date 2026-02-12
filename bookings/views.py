@@ -11,6 +11,7 @@ from .forms import ServiceBookingForm, BookingPaymentForm
 from .models import ServiceBooking
 from rewards.models import Coupon
 from rewards.utils import award_points
+from vehicles.models import Vehicle
 
 
 @login_required
@@ -23,7 +24,7 @@ def booking_create(request):
         initial = {}
 
     if request.method == "POST":
-        form = ServiceBookingForm(request.POST)
+        form = ServiceBookingForm(request.POST, user=request.user)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.user = request.user
@@ -31,9 +32,10 @@ def booking_create(request):
             booking.save()
             return redirect("bookings:checkout", pk=booking.pk)
     else:
-        form = ServiceBookingForm(initial=initial)
+        form = ServiceBookingForm(initial=initial, user=request.user)
 
-    return render(request, "bookings/booking_form.html", {"form": form})
+    user_vehicles = Vehicle.objects.filter(owner=request.user).order_by("make", "model")
+    return render(request, "bookings/booking_form.html", {"form": form, "user_vehicles": user_vehicles})
 
 
 @login_required

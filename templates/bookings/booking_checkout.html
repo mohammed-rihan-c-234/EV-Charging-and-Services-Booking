@@ -65,7 +65,7 @@
                             <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
                                 <div class="d-flex justify-content-between">
                                     <span class="text-muted"><strike style="color: #999;">Original Amount</strike></span>
-                                    <span><strike style="color: #999;">₹{{ booking.get_original_amount }}</strike></span>
+                                    <span><strike style="color: #999;">&#8377;{{ booking.get_original_amount }}</strike></span>
                                 </div>
                             </div>
                         {% endif %}
@@ -74,7 +74,7 @@
                         {% if booking.coupon_discount > 0 %}
                             <div class="mb-3 pb-3 alert alert-success d-flex justify-content-between align-items-center" style="border: none; background: #d1fae5;">
                                 <span style="color: #065f46;"><i class="bi bi-tag-fill"></i> Coupon Discount ({{ booking.get_discount_percentage }}%)</span>
-                                <span style="color: #065f46; font-weight: bold;">-₹{{ booking.coupon_discount }}</span>
+                                <span style="color: #065f46; font-weight: bold;">-&#8377;{{ booking.coupon_discount }}</span>
                             </div>
                         {% endif %}
 
@@ -82,7 +82,7 @@
                         <div class="mt-4 pt-4" style="border-top: 2px solid #e2e8f0;">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted"><strong>Amount to Pay</strong></span>
-                                <h4 class="mb-0" style="color: var(--primary);">₹{{ booking.amount }}</h4>
+                                <h4 class="mb-0" style="color: var(--primary);">&#8377;{{ booking.amount }}</h4>
                             </div>
                         </div>
 
@@ -163,17 +163,18 @@
 
                             <!-- Payment Method Selection -->
                             <label class="form-label fw-semibold d-block">Payment Method <span class="text-danger">*</span></label>
+                            {% with selected=form.payment_method.value|default:'razorpay' %}
                             <div class="row g-3 mb-4">
                                 {% for value, label in form.payment_method.field.choices %}
                                     <div class="col-md-6">
                                         <div class="payment-method-card">
-                                            <input type="radio" id="method_{{ value }}" name="payment_method" value="{{ value }}" class="form-check-input payment-radio">
+                                            <input type="radio" id="method_{{ value }}" name="payment_method" value="{{ value }}" class="form-check-input payment-radio" {% if value == selected %}checked{% endif %} required>
                                             <label for="method_{{ value }}" class="payment-label">
-                                                {% if value == 'gpay' %}
+                                                {% if value == 'razorpay' %}
                                                     <div style="text-align: center;">
-                                                        <i class="bi bi-phone" style="font-size: 2rem; color: var(--primary); display: block; margin-bottom: 0.5rem;"></i>
+                                                        <i class="bi bi-credit-card" style="font-size: 2rem; color: var(--primary); display: block; margin-bottom: 0.5rem;"></i>
                                                         <strong>{{ label }}</strong>
-                                                        <p class="text-muted small mt-2 mb-0">Pay instantly with Google Pay</p>
+                                                        <p class="text-muted small mt-2 mb-0">Pay securely via Razorpay</p>
                                                     </div>
                                                 {% else %}
                                                     <div style="text-align: center;">
@@ -187,6 +188,7 @@
                                     </div>
                                 {% endfor %}
                             </div>
+                            {% endwith %}
 
                             <hr style="border-color: #e2e8f0;">
 
@@ -280,42 +282,4 @@
     });
 </script>
 
-{% endblock %}
-      <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-          <h2 class="h4 mb-1">Appointment payment</h2>
-          <p class="text-muted small mb-4">Choose how you want to pay for this service.</p>
-
-          <div class="alert alert-light">
-            <div class="d-flex justify-content-between">
-              <div>
-                <div class="fw-semibold">{{ booking.service_type.name }}</div>
-                <div class="text-muted small">{{ booking.service_center.name }}</div>
-              </div>
-              <div class="fw-semibold">₹{{ booking.amount }}</div>
-            </div>
-          </div>
-
-          <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-              <label class="form-label">Payment method <span class="text-danger">*</span></label>
-              <div class="d-flex flex-column gap-2">
-                {% for radio in form.payment_method %}
-                  <label class="d-flex gap-2 align-items-center">
-                    {{ radio.tag }} <span>{{ radio.choice_label }}</span>
-                  </label>
-                {% endfor %}
-              </div>
-              <div class="form-text">GPay is simulated (instant). Cash will be marked “pending cash”.</div>
-            </div>
-            <div class="d-flex gap-2">
-              <button class="btn btn-primary" type="submit">Confirm payment</button>
-              <a class="btn btn-outline-primary" href="{% url 'bookings:my_bookings' %}">Skip</a>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
 {% endblock %}

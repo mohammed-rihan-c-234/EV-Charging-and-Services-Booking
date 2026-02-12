@@ -3,10 +3,12 @@ from .models import SOSAlert
 from .forms import SOSForm
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 import json
 from service_center.models import ServiceCenter
 from .utils import haversine_distance
 from .models import AssignedCenter
+from vehicles.models import Vehicle
 
 
 def sos_list(request):
@@ -15,6 +17,7 @@ def sos_list(request):
     return render(request, 'sos/sos_list.html', {'alerts': alerts})
 
 
+@login_required
 def sos_submit(request):
     """Simple page where users can submit an SOS alert.
 
@@ -22,7 +25,7 @@ def sos_submit(request):
     submission we redirect back to the alerts list and notify nearby service centers.
     """
     if request.method == 'POST':
-        form = SOSForm(request.POST)
+        form = SOSForm(request.POST, user=request.user)
         if form.is_valid():
             alert = form.save(commit=False)
             if request.user.is_authenticated:
@@ -30,8 +33,15 @@ def sos_submit(request):
             
             # Store additional form data
             name = form.cleaned_data.get('name', '')
+            selected_vehicle = form.cleaned_data.get("vehicle")
             vehicle_model = form.cleaned_data.get('vehicle_model', '')
             number_plate = form.cleaned_data.get('number_plate', '')
+            if selected_vehicle:
+                alert.vehicle = selected_vehicle
+                if not vehicle_model:
+                    vehicle_model = f"{selected_vehicle.make} {selected_vehicle.model}".strip()
+                if not number_plate:
+                    number_plate = selected_vehicle.license_plate
             
             # Store in vehicle_plate field (or message if needed)
             if number_plate:
@@ -45,9 +55,18 @@ def sos_submit(request):
             
             return redirect('sos:list')
     else:
-        form = SOSForm()
+        initial = {}
+        if request.user.is_authenticated:
+            try:
+                profile = request.user.profile  # type: ignore[attr-defined]
+                initial["name"] = profile.full_name
+                initial["contact"] = profile.phone_number
+            except Exception:
+                pass
+        form = SOSForm(user=request.user, initial=initial)
 
-    return render(request, 'sos/sos_alert_form.html', {'form': form})
+    user_vehicles = Vehicle.objects.filter(owner=request.user).order_by("make", "model") if request.user.is_authenticated else Vehicle.objects.none()
+    return render(request, 'sos/sos_alert_form.html', {'form': form, 'user_vehicles': user_vehicles})
 
 
 def notify_nearby_service_centers(alert, user_name, vehicle_model, radius_km=50):
@@ -97,11 +116,13 @@ def api_receive_alert(request):
     message = payload.get('message') or payload.get('msg') or ''
     plate = payload.get('vehicle_plate') or payload.get('plate')
     contact = payload.get('contact')
+    address = payload.get("address") or ""
 
     alert = SOSAlert.objects.create(
         vehicle_plate=plate or 'unknown',
         latitude=lat or 0.0,
         longitude=lon or 0.0,
+        address=address,
         message=message,
         contact=contact or ''
     )

@@ -34,16 +34,6 @@
                                 {{ user_form.username }}
                                 {% if user_form.username.errors %}<div class="invalid-feedback d-block">{{ user_form.username.errors|striptags }}</div>{% endif %}
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="{{ user_form.first_name.id_for_label }}">First Name</label>
-                                {{ user_form.first_name }}
-                                {% if user_form.first_name.errors %}<div class="invalid-feedback d-block">{{ user_form.first_name.errors|striptags }}</div>{% endif %}
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="{{ user_form.last_name.id_for_label }}">Last Name</label>
-                                {{ user_form.last_name }}
-                                {% if user_form.last_name.errors %}<div class="invalid-feedback d-block">{{ user_form.last_name.errors|striptags }}</div>{% endif %}
-                            </div>
                             <div class="mb-4">
                                 <label class="form-label" for="{{ user_form.email.id_for_label }}">Email Address</label>
                                 {{ user_form.email }}
@@ -51,21 +41,34 @@
                             </div>
 
                             <h6 class="mb-3"><i class="bi bi-shield-check"></i> Profile</h6>
-                            <div class="mb-3">
-                                <label class="form-label" for="{{ profile_form.full_name.id_for_label }}">Full Name <span class="text-danger">*</span></label>
-                                {{ profile_form.full_name }}
-                                {% if profile_form.full_name.errors %}<div class="invalid-feedback d-block">{{ profile_form.full_name.errors|striptags }}</div>{% endif %}
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="{{ profile_form.phone_number.id_for_label }}">Phone Number <span class="text-danger">*</span></label>
-                                {{ profile_form.phone_number }}
-                                {% if profile_form.phone_number.errors %}<div class="invalid-feedback d-block">{{ profile_form.phone_number.errors|striptags }}</div>{% endif %}
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label" for="{{ profile_form.role.id_for_label }}">Account Type <span class="text-danger">*</span></label>
-                                {{ profile_form.role }}
-                                {% if profile_form.role.errors %}<div class="invalid-feedback d-block">{{ profile_form.role.errors|striptags }}</div>{% endif %}
-                            </div>
+                            {% if profile_form.instance.role == 'service_center' %}
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ profile_form.center_name.id_for_label }}">Name of Center <span class="text-danger">*</span></label>
+                                    {{ profile_form.center_name }}
+                                    {% if profile_form.center_name.errors %}<div class="invalid-feedback d-block">{{ profile_form.center_name.errors|striptags }}</div>{% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ profile_form.center_phone.id_for_label }}">Center Phone <span class="text-danger">*</span></label>
+                                    {{ profile_form.center_phone }}
+                                    {% if profile_form.center_phone.errors %}<div class="invalid-feedback d-block">{{ profile_form.center_phone.errors|striptags }}</div>{% endif %}
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label" for="{{ profile_form.center_address.id_for_label }}">Address <span class="text-danger">*</span></label>
+                                    {{ profile_form.center_address }}
+                                    {% if profile_form.center_address.errors %}<div class="invalid-feedback d-block">{{ profile_form.center_address.errors|striptags }}</div>{% endif %}
+                                </div>
+                            {% else %}
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ profile_form.full_name.id_for_label }}">Full Name <span class="text-danger">*</span></label>
+                                    {{ profile_form.full_name }}
+                                    {% if profile_form.full_name.errors %}<div class="invalid-feedback d-block">{{ profile_form.full_name.errors|striptags }}</div>{% endif %}
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label" for="{{ profile_form.phone_number.id_for_label }}">Phone Number <span class="text-danger">*</span></label>
+                                    {{ profile_form.phone_number }}
+                                    {% if profile_form.phone_number.errors %}<div class="invalid-feedback d-block">{{ profile_form.phone_number.errors|striptags }}</div>{% endif %}
+                                </div>
+                            {% endif %}
 
                             <div class="d-flex gap-2">
                                 <button class="btn btn-primary" type="submit">

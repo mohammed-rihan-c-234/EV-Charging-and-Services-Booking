@@ -1,0 +1,61 @@
+{% extends "admin_portal/base.html" %}
+
+{% block portal_content %}
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+            <div class="card-body">
+                <p class="text-muted mb-1">Total Models</p>
+                <h3 class="mb-0">{{ total_models }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+            <div class="card-body">
+                <p class="text-muted mb-1">Total Rows</p>
+                <h3 class="mb-0">{{ total_rows }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+    <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white;">
+        <h5 class="mb-0">Database Overview</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>App</th>
+                        <th>Records</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in cards %}
+                        <tr>
+                            <td>{{ card.name }}</td>
+                            <td><span class="badge bg-light text-dark">{{ card.app_label }}</span></td>
+                            <td>{{ card.count }}</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" href="{% url 'admin_portal:model_list' card.app_label card.model_name %}">
+                                    Open
+                                </a>
+                                {% if card.perms.add %}
+                                    <a class="btn btn-sm btn-primary" href="{% url 'admin_portal:model_create' card.app_label card.model_name %}">
+                                        Add
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,8 +1,16 @@
 from django.db import models
 from django.conf import settings
+from service_center.models import ServiceCenter
 
 class ChatSession(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    service_center = models.ForeignKey(
+        ServiceCenter,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="chat_sessions",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

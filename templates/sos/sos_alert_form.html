@@ -89,6 +89,16 @@
                             <!-- Vehicle Information -->
                             <div class="mb-4">
                                 <h6 class="mb-3"><i class="bi bi-car-front-fill" style="color: var(--secondary);"></i> Vehicle Details</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Registered Vehicle</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                            <i class="bi bi-list-check"></i>
+                                        </span>
+                                        {{ form.vehicle }}
+                                    </div>
+                                    {% if form.vehicle.errors %}<div class="invalid-feedback d-block">{{ form.vehicle.errors|striptags }}</div>{% endif %}
+                                </div>
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label">Vehicle Model <span class="text-danger">*</span></label>
@@ -118,30 +128,20 @@
                             <!-- Location Section -->
                             <div class="mb-4">
                                 <h6 class="mb-3"><i class="bi bi-geo-alt-fill" style="color: var(--success);"></i> Your Location</h6>
-                                <div class="row g-3 mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Latitude <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-                                                <i class="bi bi-geo"></i>
-                                            </span>
-                                            {{ form.latitude }}
-                                        </div>
-                                        {% if form.latitude.errors %}<div class="invalid-feedback d-block">{{ form.latitude.errors|striptags }}</div>{% endif %}
+                                {{ form.latitude }}
+                                {{ form.longitude }}
+                                <div class="mb-3">
+                                    <label class="form-label">Address <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                            <i class="bi bi-geo"></i>
+                                        </span>
+                                        {{ form.address }}
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Longitude <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
-                                                <i class="bi bi-geo"></i>
-                                            </span>
-                                            {{ form.longitude }}
-                                        </div>
-                                        {% if form.longitude.errors %}<div class="invalid-feedback d-block">{{ form.longitude.errors|striptags }}</div>{% endif %}
-                                    </div>
+                                    {% if form.address.errors %}<div class="invalid-feedback d-block">{{ form.address.errors|striptags }}</div>{% endif %}
                                 </div>
                                 <button type="button" id="useLocationBtn" class="btn btn-outline-success btn-sm w-100">
-                                    <i class="bi bi-geo-alt-fill"></i> Get My Current Location
+                                    <i class="bi bi-geo-alt-fill"></i> Get My Current Location & Address
                                 </button>
                             </div>
 
@@ -221,6 +221,40 @@
         const useLocationBtn = document.getElementById('useLocationBtn');
         const latInput = document.querySelector('input[name="latitude"]');
         const lngInput = document.querySelector('input[name="longitude"]');
+        const addressInput = document.querySelector('input[name="address"]');
+        const vehicleSelect = document.querySelector('select[name="vehicle"]');
+        const vehicleModelInput = document.querySelector('input[name="vehicle_model"]');
+        const numberPlateInput = document.querySelector('input[name="number_plate"]');
+
+        const vehicleMap = {
+            {% for v in user_vehicles %}
+            "{{ v.id }}": {
+                model: "{{ v.make|escapejs }} {{ v.model|escapejs }}".trim(),
+                plate: "{{ v.license_plate|default:''|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        };
+
+        function syncVehicleFields() {
+            if (!vehicleSelect) {
+                return;
+            }
+            const selected = vehicleMap[vehicleSelect.value];
+            if (!selected) {
+                return;
+            }
+            if (vehicleModelInput) {
+                vehicleModelInput.value = selected.model || "";
+            }
+            if (numberPlateInput) {
+                numberPlateInput.value = selected.plate || "";
+            }
+        }
+
+        if (vehicleSelect) {
+            vehicleSelect.addEventListener('change', syncVehicleFields);
+            syncVehicleFields();
+        }
 
         if(useLocationBtn){
             useLocationBtn.addEventListener('click', function(e){
@@ -230,17 +264,33 @@
                     useLocationBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Getting location...';
                     
                     navigator.geolocation.getCurrentPosition(
-                        function(position){
-                            latInput.value = position.coords.latitude.toFixed(6);
-                            lngInput.value = position.coords.longitude.toFixed(6);
-                            useLocationBtn.innerHTML = '<i class="bi bi-check-circle"></i> Location obtained!';
+                        async function(position){
+                            const lat = position.coords.latitude.toFixed(6);
+                            const lon = position.coords.longitude.toFixed(6);
+                            latInput.value = lat;
+                            lngInput.value = lon;
+
+                            try {
+                                const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+                                if (!resp.ok) {
+                                    throw new Error("Reverse geocoding failed");
+                                }
+                                const data = await resp.json();
+                                if (addressInput) {
+                                    addressInput.value = data.display_name || "";
+                                }
+                                useLocationBtn.innerHTML = '<i class="bi bi-check-circle"></i> Address fetched!';
+                            } catch (err) {
+                                useLocationBtn.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Location set, enter address manually';
+                            }
+
                             useLocationBtn.classList.add('btn-success');
                             useLocationBtn.classList.remove('btn-outline-success');
                         },
                         function(error){
-                            alert('Unable to get location. Please enter manually. Error: ' + error.message);
+                            alert('Unable to get current location. Please enter your address manually. Error: ' + error.message);
                             useLocationBtn.disabled = false;
-                            useLocationBtn.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Use My Current Location';
+                            useLocationBtn.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Get My Current Location & Address';
                         }
                     );
                 } else {

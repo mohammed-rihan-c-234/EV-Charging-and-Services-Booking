@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+import re
 
 from .models import Profile
 from service_center.models import ServiceCenter
@@ -110,11 +111,11 @@ class SignUpForm(UserCreationForm):
 class UserProfileEditForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "email")
+        fields = ("username", "email")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for name in ("username", "first_name", "last_name", "email"):
+        for name in ("username", "email"):
             self.fields[name].widget.attrs.setdefault("class", "form-control")
 
     def clean_username(self):
@@ -138,18 +139,32 @@ class UserProfileEditForm(forms.ModelForm):
 
 
 class ProfileEditForm(forms.ModelForm):
+    center_name = forms.CharField(max_length=200, required=False, label="Name of Center")
+    center_phone = forms.CharField(max_length=30, required=False, label="Center Phone")
+    center_address = forms.CharField(max_length=300, required=False, label="Address")
+
     class Meta:
         model = Profile
-        fields = ("full_name", "phone_number", "role")
+        fields = ("full_name", "phone_number")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["full_name"].widget.attrs.setdefault("class", "form-control")
         self.fields["phone_number"].widget.attrs.setdefault("class", "form-control")
-        self.fields["role"].widget.attrs.setdefault("class", "form-select")
+        self.fields["center_name"].widget.attrs.setdefault("class", "form-control")
+        self.fields["center_phone"].widget.attrs.setdefault("class", "form-control")
+        self.fields["center_address"].widget.attrs.setdefault("class", "form-control")
+        if self.instance and getattr(self.instance, "role", "") == Profile.ROLE_SERVICE_CENTER:
+            center = getattr(self.instance, "service_center", None)
+            if center:
+                self.fields["center_name"].initial = center.name
+                self.fields["center_phone"].initial = center.phone
+                self.fields["center_address"].initial = center.address
 
     def clean_phone_number(self):
         value = (self.cleaned_data.get("phone_number") or "").strip()
+        if self.instance and getattr(self.instance, "role", "") == Profile.ROLE_SERVICE_CENTER:
+            return value
         if not value:
             raise forms.ValidationError("Phone number is required.")
         if not value.isdigit():
@@ -157,3 +172,48 @@ class ProfileEditForm(forms.ModelForm):
         if len(value) != 10:
             raise forms.ValidationError("Phone number must be exactly 10 digits.")
         return value
+
+    def clean_full_name(self):
+        value = (self.cleaned_data.get("full_name") or "").strip()
+        if self.instance and getattr(self.instance, "role", "") == Profile.ROLE_SERVICE_CENTER:
+            return value
+        if not value:
+            raise forms.ValidationError("Full name is required.")
+        if not re.fullmatch(r"[A-Za-z ]+", value):
+            raise forms.ValidationError("Full name can contain only alphabets and spaces.")
+        return " ".join(value.split())
+
+    def clean(self):
+        cleaned = super().clean()
+        if self.instance and getattr(self.instance, "role", "") == Profile.ROLE_SERVICE_CENTER:
+            center_name = (cleaned.get("center_name") or "").strip()
+            center_phone = (cleaned.get("center_phone") or "").strip()
+            center_address = (cleaned.get("center_address") or "").strip()
+            if not center_name:
+                self.add_error("center_name", "Center name is required.")
+            if center_name and not center_name.replace(" ", "").isalpha():
+                self.add_error("center_name", "Center name must contain only alphabets.")
+            if not center_phone:
+                self.add_error("center_phone", "Center phone is required.")
+            if not center_phone.isdigit():
+                self.add_error("center_phone", "Center phone must contain only digits.")
+            if center_phone and len(center_phone) != 10:
+                self.add_error("center_phone", "Center phone must be exactly 10 digits.")
+            if not center_address:
+                self.add_error("center_address", "Address is required.")
+        return cleaned
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        if profile.role == Profile.ROLE_SERVICE_CENTER and profile.service_center:
+            center = profile.service_center
+            center.name = (self.cleaned_data.get("center_name") or center.name).strip()
+            center.phone = (self.cleaned_data.get("center_phone") or center.phone).strip()
+            center.address = (self.cleaned_data.get("center_address") or center.address).strip()
+            if commit:
+                center.save(update_fields=["name", "phone", "address"])
+            profile.full_name = center.name
+            profile.phone_number = center.phone
+        if commit:
+            profile.save()
+        return profile

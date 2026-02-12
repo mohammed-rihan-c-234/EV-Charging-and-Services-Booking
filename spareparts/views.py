@@ -142,13 +142,14 @@ def cart_checkout(request):
         form = PaymentChoiceForm(request.POST)
         if form.is_valid():
             method = form.cleaned_data["payment_method"]
+            cart.service_center = form.cleaned_data["service_center"]
             cart.payment_method = method
             cart.status = PartOrder.STATUS_PLACED
             if method == PartOrder.PAYMENT_METHOD_RAZORPAY:
-                cart.save(update_fields=["payment_method", "status"])
+                cart.save(update_fields=["service_center", "payment_method", "status"])
                 return redirect("spareparts:razorpay_payment", pk=cart.pk)
             cart.payment_status = PartOrder.PAYMENT_PENDING_CASH
-            cart.save(update_fields=["payment_method", "payment_status", "status"])
+            cart.save(update_fields=["service_center", "payment_method", "payment_status", "status"])
             
             # Recalculate total before awarding points
             cart.recalc_total()
@@ -172,7 +173,12 @@ def cart_checkout(request):
                 messages.success(request, "Order placed.")
             return redirect("spareparts:order_detail", pk=cart.pk)
     else:
-        form = PaymentChoiceForm()
+        form = PaymentChoiceForm(
+            initial={
+                "service_center": cart.service_center_id,
+                "payment_method": cart.payment_method or PaymentChoiceForm.PAYMENT_RAZORPAY,
+            }
+        )
 
     reward_account = RewardAccount.objects.filter(user=request.user).first()
     available_points = reward_account.points if reward_account else 0
@@ -266,14 +272,19 @@ def razorpay_verify(request, pk):
 
 @login_required
 def order_detail(request, pk):
-    order = get_object_or_404(PartOrder, pk=pk, user=request.user)
+    order = get_object_or_404(PartOrder.objects.select_related("service_center"), pk=pk, user=request.user)
     order.recalc_total()
     return render(request, "spareparts/order_detail.html", {"order": order})
 
 
 @login_required
 def my_orders(request):
-    orders = PartOrder.objects.filter(user=request.user).exclude(status=PartOrder.STATUS_CART).order_by('-created_at')
+    orders = (
+        PartOrder.objects.select_related("service_center")
+        .filter(user=request.user)
+        .exclude(status=PartOrder.STATUS_CART)
+        .order_by("-created_at")
+    )
     return render(request, "spareparts/my_orders.html", {"orders": orders})
 
 

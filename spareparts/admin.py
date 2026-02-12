@@ -15,7 +15,7 @@ class PartOrderItemInline(admin.TabularInline):
 
 @admin.register(PartOrder)
 class PartOrderAdmin(admin.ModelAdmin):
-    list_display = ("id", "user", "status", "payment_status", "payment_method", "total_amount", "created_at")
-    list_filter = ("status", "payment_status", "payment_method")
+    list_display = ("id", "user", "service_center", "status", "payment_status", "payment_method", "total_amount", "created_at")
+    list_filter = ("status", "payment_status", "payment_method", "service_center")
     search_fields = ("user__username", "id")
     inlines = [PartOrderItemInline]

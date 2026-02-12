@@ -4,6 +4,7 @@
       <thead>
         <tr>
           <th>Order</th>
+          <th>Center</th>
           <th>User</th>
           <th>Total</th>
           <th>Payment</th>
@@ -15,6 +16,7 @@
         {% for o in orders %}
           <tr>
             <td>#{{ o.pk }}</td>
+            <td>{{ o.service_center.name|default:"-" }}</td>
             <td class="fw-semibold">{{ o.user.username }}</td>
             <td>&#8377;{{ o.total_amount }}</td>
             <td>
@@ -42,4 +44,3 @@
     </table>
   </div>
 {% endif %}
-

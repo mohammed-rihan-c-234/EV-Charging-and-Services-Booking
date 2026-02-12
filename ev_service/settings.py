@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'service_center',
     'spareparts',
     'rewards',
+    'admin_portal',
     # bookings app will be added later if needed
 ]
 

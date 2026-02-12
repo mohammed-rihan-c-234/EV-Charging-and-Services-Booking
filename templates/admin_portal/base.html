@@ -1,0 +1,44 @@
+{% extends "base_new.html" %}
+{% load static %}
+
+{% block title %}Admin Portal - EV Service Platform{% endblock %}
+
+{% block content %}
+<section style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fef3c7 100%); padding: 2.5rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-shield-lock"></i> Admin Portal</h1>
+            <p class="text-muted mb-0">Custom administration dashboard with full data controls.</p>
+        </div>
+        <a href="{% url 'admin_portal:dashboard' %}" class="btn btn-outline-primary">Home</a>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="row g-4">
+            <div class="col-lg-3">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-header" style="background: var(--gradient-primary); color: white;">
+                        <h6 class="mb-0">Data Models</h6>
+                    </div>
+                    <div class="list-group list-group-flush" style="max-height: 70vh; overflow-y: auto;">
+                        {% for entry in portal_models %}
+                            {% with key=entry.app_label|add:"."|add:entry.model_name %}
+                                <a href="{% url 'admin_portal:model_list' entry.app_label entry.model_name %}"
+                                   class="list-group-item list-group-item-action {% if active_key == key %}active{% endif %}">
+                                    {{ entry.verbose_name_plural }}
+                                    <small class="text-muted d-block">{{ entry.app_label }}</small>
+                                </a>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                {% block portal_content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

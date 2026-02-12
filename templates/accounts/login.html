@@ -112,10 +112,13 @@
                         <a class="btn btn-outline-primary btn-lg w-100 mb-3" href="{% url 'accounts:signup' %}">
                             <i class="bi bi-person-plus"></i> Create an Account
                         </a>
+                        <a class="btn btn-outline-secondary btn-lg w-100" href="/admin-portal/">
+                            <i class="bi bi-shield-lock"></i> Open Admin Portal
+                        </a>
 
                         <!-- Footer Link -->
                         <p class="text-muted small text-center mb-0 mt-3">
-                            💡 Tip: Staff members can also log in via <a href="/admin/" class="text-primary">Admin Panel</a>
+                            Staff login supports both custom Admin Portal and default <a href="/admin/" class="text-primary">Django Admin</a>
                         </p>
                     </div>
                 </div>

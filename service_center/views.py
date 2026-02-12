@@ -62,8 +62,21 @@ def dashboard(request):
             qs = qs.filter(service_center_id=center_id)
 
     last_msg = ChatMessage.objects.filter(session=OuterRef("pk")).order_by("-created_at")
+    chat_sessions_qs = ChatSession.objects.select_related("user", "service_center")
+    if not request.user.is_staff:
+        try:
+            profile = request.user.profile  # type: ignore[attr-defined]
+            if profile.service_center_id:
+                chat_sessions_qs = chat_sessions_qs.filter(service_center_id=profile.service_center_id)
+            else:
+                chat_sessions_qs = chat_sessions_qs.none()
+        except Exception:
+            chat_sessions_qs = chat_sessions_qs.none()
+    elif center_id:
+        chat_sessions_qs = chat_sessions_qs.filter(service_center_id=center_id)
+
     chat_sessions = (
-        ChatSession.objects.select_related("user")
+        chat_sessions_qs
         .annotate(last_text=Subquery(last_msg.values("text")[:1]))
         .annotate(last_time=Subquery(last_msg.values("created_at")[:1]))
         .order_by("-last_time", "-created_at")[:25]
@@ -78,12 +91,23 @@ def dashboard(request):
     bookings_all = bookings_paid.order_by("-scheduled_for", "-created_at")
 
     part_orders_qs = (
-        PartOrder.objects.select_related("user")
+        PartOrder.objects.select_related("user", "service_center")
         .prefetch_related("items", "items__part")
         .exclude(status=PartOrder.STATUS_CART)
         .exclude(payment_status=PartOrder.PAYMENT_UNPAID)
         .order_by("-created_at")
     )
+    if not request.user.is_staff:
+        try:
+            profile = request.user.profile  # type: ignore[attr-defined]
+            if profile.service_center_id:
+                part_orders_qs = part_orders_qs.filter(service_center_id=profile.service_center_id)
+            else:
+                part_orders_qs = part_orders_qs.none()
+        except Exception:
+            part_orders_qs = part_orders_qs.none()
+    elif center_id:
+        part_orders_qs = part_orders_qs.filter(service_center_id=center_id)
     part_orders_pending = part_orders_qs.filter(status=PartOrder.STATUS_PLACED)[:25]
     part_orders_all = part_orders_qs[:25]
     return render(

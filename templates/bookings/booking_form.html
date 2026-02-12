@@ -79,6 +79,25 @@
                             <!-- Service Selection -->
                             <div class="mb-4">
                                 <h6 class="mb-3"><i class="bi bi-tools" style="color: var(--secondary);"></i> Service Details</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.vehicle.label }} <span class="text-danger">*</span></label>
+                                    {{ form.vehicle }}
+                                    {% if form.vehicle.errors %}<div class="invalid-feedback d-block">{{ form.vehicle.errors|striptags }}</div>{% endif %}
+                                </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Make</label>
+                                        <input type="text" id="vehicle_make" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Model</label>
+                                        <input type="text" id="vehicle_model" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">License Plate</label>
+                                        <input type="text" id="vehicle_plate" class="form-control" readonly>
+                                    </div>
+                                </div>
                                 
                                 <div class="row g-3">
                                     <div class="col-md-6">
@@ -158,5 +177,37 @@
         </div>
     </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const vehicleSelect = document.querySelector('select[name="vehicle"]');
+        const makeInput = document.getElementById("vehicle_make");
+        const modelInput = document.getElementById("vehicle_model");
+        const plateInput = document.getElementById("vehicle_plate");
+
+        const vehicleMap = {
+            {% for v in user_vehicles %}
+            "{{ v.id }}": {
+                make: "{{ v.make|default:''|escapejs }}",
+                model: "{{ v.model|default:''|escapejs }}",
+                plate: "{{ v.license_plate|default:''|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        };
+
+        function fillVehicleDetails() {
+            if (!vehicleSelect) return;
+            const selected = vehicleMap[vehicleSelect.value];
+            makeInput.value = selected ? selected.make : "";
+            modelInput.value = selected ? selected.model : "";
+            plateInput.value = selected ? selected.plate : "";
+        }
+
+        if (vehicleSelect) {
+            vehicleSelect.addEventListener("change", fillVehicleDetails);
+            fillVehicleDetails();
+        }
+    });
+</script>
 
 {% endblock %}

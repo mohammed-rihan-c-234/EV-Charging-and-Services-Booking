@@ -1,0 +1,81 @@
+{% extends "admin_portal/base.html" %}
+
+{% block portal_content %}
+<div class="card border-0 mb-3" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+    <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h4 class="mb-1">{{ meta.verbose_name_plural|title }}</h4>
+            <p class="text-muted small mb-0">{{ meta.app_label }}.{{ meta.model_name }}</p>
+        </div>
+        {% if can_add %}
+            <a href="{% url 'admin_portal:model_create' meta.app_label meta.model_name %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card border-0 mb-3" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-sm-9">
+                <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search records...">
+            </div>
+            <div class="col-sm-3">
+                <button class="btn btn-outline-primary w-100" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    {% for col in columns %}
+                        <th>{{ col.verbose_name|title }}</th>
+                    {% endfor %}
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {% for value in row.values %}
+                            <td>{{ value|truncatechars:60 }}</td>
+                        {% endfor %}
+                        <td class="text-end">
+                            {% if can_change %}
+                                <a href="{% url 'admin_portal:model_edit' meta.app_label meta.model_name row.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                            {% endif %}
+                            {% if can_delete %}
+                                <a href="{% url 'admin_portal:model_delete' meta.app_label meta.model_name row.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="{{ columns|length|add:1 }}" class="text-center text-muted py-4">No records found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if page_obj.paginator.num_pages > 1 %}
+        <div class="card-footer bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</small>
+                <div class="btn-group btn-group-sm">
+                    {% if page_obj.has_previous %}
+                        <a class="btn btn-outline-primary" href="?q={{ q }}&page={{ page_obj.previous_page_number }}">Prev</a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <a class="btn btn-outline-primary" href="?q={{ q }}&page={{ page_obj.next_page_number }}">Next</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -49,6 +49,12 @@
                                         <i class="bi bi-box2-heart" style="color: var(--success); margin-right: 0.5rem;"></i>
                                         <span>{{ order.items.all|length }} item{{ order.items.all|length|pluralize }}</span>
                                     </div>
+                                    {% if order.service_center %}
+                                        <div class="d-flex align-items-center text-muted small mb-2">
+                                            <i class="bi bi-building" style="color: var(--success); margin-right: 0.5rem;"></i>
+                                            <span>{{ order.service_center.name }}</span>
+                                        </div>
+                                    {% endif %}
                                     <div class="d-flex align-items-center text-muted small mb-2">
                                         <i class="bi bi-calendar-event" style="color: var(--success); margin-right: 0.5rem;"></i>
                                         {{ order.created_at|date:"M d, Y" }}
