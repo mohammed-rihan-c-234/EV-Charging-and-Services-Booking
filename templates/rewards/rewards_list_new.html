@@ -1,0 +1,190 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Rewards - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 50%, #fbbf24 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-star-fill" style="color: #f59e0b;"></i> Rewards Program
+                </h1>
+                <p class="text-muted mb-0">Earn points for eco-friendly driving and redeem for rewards</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Rewards Overview -->
+<section class="section-padding">
+    <div class="container-lg">
+        <!-- Points Card -->
+        <div class="row justify-content-center mb-5" data-aos="fade-up">
+            <div class="col-lg-8">
+                <div class="card border-0" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white;">
+                    <div class="card-body p-5 text-center">
+                        <p class="mb-2">Your Current Points</p>
+                        <h1 class="mb-3" style="font-size: 3.5rem;">{{ total_points|default:"0" }}</h1>
+                        <p class="mb-0">Keep driving eco-friendly to earn more points!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="row mb-5">
+            <div class="col-12" data-aos="fade-up">
+                <h2 class="text-center mb-4">How to Earn Points</h2>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div style="font-size: 2.5rem; color: var(--success); margin-bottom: 1rem;">
+                            <i class="bi bi-lightning-charge"></i>
+                        </div>
+                        <h6>Charging</h6>
+                        <p class="small text-muted">1 point per charge at our stations</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <h6>Services</h6>
+                        <p class="small text-muted">5 points per service booking</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div style="font-size: 2.5rem; color: #10b981; margin-bottom: 1rem;">
+                            <i class="bi bi-flower1"></i>
+                        </div>
+                        <h6>Eco-Driving</h6>
+                        <p class="small text-muted">Bonus points for eco-friendly habits</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Redemption Options -->
+<section class="section-padding" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <h2 class="text-center mb-5" data-aos="fade-up">Redeem Your Points</h2>
+        <div class="row g-4">
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title">Service Discount</h5>
+                            <span class="badge" style="background: var(--gradient-primary); color: white;">100 pts</span>
+                        </div>
+                        <p class="card-text text-muted small mb-3">Get 10% off on any service at our partner centers</p>
+                        <button class="btn btn-primary btn-sm w-100">Redeem Now</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title">Free Charging</h5>
+                            <span class="badge" style="background: var(--gradient-secondary); color: white;">50 pts</span>
+                        </div>
+                        <p class="card-text text-muted small mb-3">One free fast charging session at participating stations</p>
+                        <button class="btn btn-primary btn-sm w-100">Redeem Now</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title">Spare Parts Credit</h5>
+                            <span class="badge" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white;">150 pts</span>
+                        </div>
+                        <p class="card-text text-muted small mb-3">$15 credit towards spare parts purchase</p>
+                        <button class="btn btn-primary btn-sm w-100">Redeem Now</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="card h-100 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title">Priority Support</h5>
+                            <span class="badge" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); color: white;">200 pts</span>
+                        </div>
+                        <p class="card-text text-muted small mb-3">30 days of priority customer support access</p>
+                        <button class="btn btn-primary btn-sm w-100">Redeem Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Leaderboard -->
+<section class="section-padding">
+    <div class="container-lg">
+        <h2 class="text-center mb-5" data-aos="fade-up">Top Drivers</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+                <div class="card border-0">
+                    <div class="card-body p-0">
+                        {% if accounts %}
+                            <table class="table table-hover align-middle mb-0">
+                                <thead style="background: #f8fafc;">
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Driver</th>
+                                        <th>Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for account in accounts %}
+                                        <tr>
+                                            <td>
+                                                {% if forloop.counter == 1 %}
+                                                    <span class="badge" style="background: #FFD700; color: white;">#{{ forloop.counter }}</span>
+                                                {% elif forloop.counter == 2 %}
+                                                    <span class="badge" style="background: #C0C0C0; color: white;">#{{ forloop.counter }}</span>
+                                                {% elif forloop.counter == 3 %}
+                                                    <span class="badge" style="background: #CD7F32; color: white;">#{{ forloop.counter }}</span>
+                                                {% else %}
+                                                    <span class="badge" style="background: var(--primary); color: white;">#{{ forloop.counter }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <strong>{{ account.user.username }}</strong>
+                                            </td>
+                                            <td>
+                                                <strong style="color: var(--primary);">{{ account.points }} pts</strong>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="text-center p-5">
+                                <p class="text-muted">Start earning points to appear on the leaderboard!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends 'base_new.html' %}
+
+{% block title %}Shopping Cart - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #f3e8ff 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center justify-content-between">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-bag-check" style="color: var(--primary);"></i> Shopping Cart
+                </h1>
+                <p class="text-muted mb-0">Review and manage your spare parts order</p>
+            </div>
+            <div class="col-auto" data-aos="fade-left">
+                <a href="{% url 'spareparts:list' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Cart Content -->
+<section class="section-padding">
+    <div class="container-lg">
+        {% if cart.items.all|length %}
+            <div class="row g-4">
+                <!-- Cart Items -->
+                <div class="col-lg-8" data-aos="fade-right">
+                    <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead style="background: #f8fafc;">
+                                        <tr>
+                                            <th>Part Name</th>
+                                            <th>Qty</th>
+                                            <th>Unit Price</th>
+                                            <th>Total</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in cart.items.all %}
+                                            <tr>
+                                                <td><strong>{{ item.part.name }}</strong></td>
+                                                <td>
+                                                    <div class="d-inline-flex align-items-center gap-2">
+                                                        <form method="post" action="{% url 'spareparts:cart_update' item.id %}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="action" value="dec">
+                                                            <button class="btn btn-sm btn-outline-secondary" type="submit" aria-label="Decrease quantity">
+                                                                <i class="bi bi-dash"></i>
+                                                            </button>
+                                                        </form>
+                                                        <span class="fw-semibold">{{ item.quantity }}</span>
+                                                        <form method="post" action="{% url 'spareparts:cart_update' item.id %}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="action" value="inc">
+                                                            <button class="btn btn-sm btn-outline-secondary" type="submit" aria-label="Increase quantity">
+                                                                <i class="bi bi-plus"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                                <td>₹{{ item.unit_price }}</td>
+                                                <td><strong style="color: var(--primary);">₹{{ item.line_total }}</strong></td>
+                                                <td>
+                                                    <a href="{% url 'spareparts:cart_remove' item.id %}" class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="col-lg-4" data-aos="fade-left">
+                    <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); position: sticky; top: 2rem;">
+                        <div class="card-body p-4">
+                            <h5 class="mb-4">Order Summary</h5>
+                            
+                            <div class="mb-3 pb-3 border-bottom">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Subtotal</span>
+                                    <span>₹{{ cart.total_amount }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Shipping</span>
+                                    <span style="color: var(--success);">FREE</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">Tax (10%)</span>
+                                    <span>₹{{ cart.total_amount|floatformat:0 }}</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <strong>Total Amount</strong>
+                                    <h4 style="color: var(--primary); margin: 0;">₹{{ cart.total_amount }}</h4>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'spareparts:checkout' %}" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-credit-card"></i> Proceed to Checkout
+                                </a>
+                            </div>
+
+                            <!-- Security Info -->
+                            <div class="mt-4 p-3" style="background: #f8fafc; border-radius: 0.75rem;">
+                                <div class="small text-muted">
+                                    <i class="bi bi-shield-check" style="color: var(--success);"></i>
+                                    <strong>Secure Checkout</strong>
+                                    <p class="mb-0 mt-1">Your payment information is encrypted and secure.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="text-center py-5">
+                        <div style="font-size: 4rem; color: #cbd5e1; margin-bottom: 1rem;">
+                            <i class="bi bi-bag-x"></i>
+                        </div>
+                        <h3 class="text-muted mb-3">Your Cart is Empty</h3>
+                        <p class="text-muted mb-4">Start shopping for genuine spare parts for your EV</p>
+                        <a href="{% url 'spareparts:list' %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-shop"></i> Browse Spare Parts
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

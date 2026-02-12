@@ -1,0 +1,284 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Checkout - Spare Parts - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fef3c7 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-credit-card" style="color: var(--primary);"></i> Complete Payment
+                </h1>
+                <p class="text-muted mb-0">Review your spare parts order and select a payment method</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Checkout Content -->
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="row g-4">
+            <!-- Order Summary -->
+            <div class="col-lg-5" data-aos="fade-right">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-header" style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); color: white; border: none; padding: 1.5rem;">
+                        <h5 class="mb-0"><i class="bi bi-receipt"></i> Order Summary</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Order Items -->
+                        <div class="mb-4">
+                            <p class="text-muted small mb-3"><strong>Items:</strong></p>
+                            {% for item in cart.items.all %}
+                                <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <p class="mb-1"><strong>{{ item.part.name }}</strong></p>
+                                            <p class="text-muted small mb-0">Qty: {{ item.quantity }}</p>
+                                        </div>
+                                        <p class="mb-0"><strong>&#8377;{{ item.line_total }}</strong></p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Original Price (if discount applied) -->
+                        {% if cart.coupon_discount > 0 %}
+                            <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted"><strike style="color: #999;">Original Price</strike></span>
+                                    <span><strike style="color: #999;">&#8377;{{ cart.get_original_total }}</strike></span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Summary Details -->
+                        <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Subtotal</span>
+                                <span>&#8377;{{ cart.get_original_total }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Coupon Discount Display -->
+                        {% if cart.coupon_discount > 0 %}
+                            <div class="mb-3 pb-3 alert alert-success d-flex justify-content-between align-items-center" style="border: none; background: #d1fae5;">
+                                <span style="color: #065f46;"><i class="bi bi-tag-fill"></i> Coupon Discount ({{ cart.get_discount_percentage }}%)</span>
+                                <span style="color: #065f46; font-weight: bold;">-&#8377;{{ cart.coupon_discount }}</span>
+                            </div>
+                        {% endif %}
+
+                        <!-- Reward Points -->
+                        {% if available_points %}
+                            <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Reward Points Available</span>
+                                    <strong>{{ available_points }}</strong>
+                                </div>
+                                {% if cart.points_redeemed > 0 %}
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-muted">Points Applied</span>
+                                        <strong>-{{ cart.points_redeemed }}</strong>
+                                    </div>
+                                    <form method="post" class="mb-0">
+                                        {% csrf_token %}
+                                        <button type="submit" name="remove_points" class="btn btn-sm btn-outline-danger w-100">
+                                            <i class="bi bi-x-circle"></i> Remove Points
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <form method="post" class="mb-0">
+                                        {% csrf_token %}
+                                        <div class="input-group">
+                                            <input type="number" min="0" name="points_to_use" class="form-control" placeholder="Points to use">
+                                            <button type="submit" name="apply_points" class="btn btn-outline-success">Apply</button>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">50 points = &#8377;5 discount</small>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Total Amount -->
+                        <div class="mt-4 pt-4" style="border-top: 2px solid #e2e8f0;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted"><strong>Total Amount</strong></span>
+                                <h4 class="mb-0" style="color: var(--primary);">&#8377;{{ cart.total_amount }}</h4>
+                            </div>
+                        </div>
+
+                        <!-- Coupon Section -->
+                        {% if available_coupons %}
+                            <div class="mt-4 pt-4" style="border-top: 2px solid #e2e8f0;">
+                                {% if cart.coupon_discount > 0 %}
+                                    <!-- Remove Coupon -->
+                                    <p class="text-muted small mb-3"><strong>Applied Coupon</strong></p>
+                                    <form method="post" class="mb-3">
+                                        {% csrf_token %}
+                                        <button type="submit" name="remove_coupon" class="btn btn-sm btn-outline-danger w-100">
+                                            <i class="bi bi-x-circle"></i> Remove Coupon
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <!-- Apply Coupon -->
+                                    <p class="text-muted small mb-3"><strong>Have a Coupon?</strong></p>
+                                    <form method="post" class="mb-3">
+                                        {% csrf_token %}
+                                        <div class="input-group">
+                                            <input type="text" name="coupon_code" class="form-control" placeholder="Enter coupon code" style="border-radius: 0.5rem 0 0 0.5rem;">
+                                            <button type="submit" name="apply_coupon" class="btn btn-primary" style="border-radius: 0 0.5rem 0.5rem 0;">
+                                                Apply
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    <!-- Available Coupons -->
+                                    <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+                                        <p class="small mb-2" style="color: #065f46; font-weight: 600;"><i class="bi bi-ticket-perforated"></i> Available Coupons:</p>
+                                        <div style="max-height: 150px; overflow-y: auto;">
+                                            {% for coupon in available_coupons %}
+                                                <div style="background: white; padding: 0.75rem; margin-bottom: 0.5rem; border-radius: 0.375rem; border-left: 3px solid #10b981;">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <p class="mb-1 small" style="font-weight: 600; color: #065f46;">{{ coupon.code }}</p>
+                                                            <p class="mb-0 small text-muted">{{ coupon.description }}</p>
+                                                        </div>
+                                                        <span class="badge" style="background: #10b981; color: white; font-size: 0.85rem;">{{ coupon.discount_percent }}% OFF</span>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Info Alert -->
+                <div class="alert alert-info mt-4 d-flex align-items-start" style="border-left: 5px solid var(--info); background: #eff6ff;">
+                    <i class="bi bi-info-circle-fill me-3 mt-1" style="color: var(--info);"></i>
+                    <div>
+                        <p class="mb-0 small"><strong>Note:</strong> Please select your preferred payment method below to complete your order.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="col-lg-7" data-aos="fade-left">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; padding: 1.5rem;">
+                        <h5 class="mb-0"><i class="bi bi-wallet2"></i> Payment Method</h5>
+                    </div>
+                    <div class="card-body p-5">
+
+                        {% if form.errors %}
+                            <div class="alert alert-danger d-flex align-items-center mb-4" style="border-left: 5px solid var(--danger);">
+                                <i class="bi bi-exclamation-circle-fill me-3" style="font-size: 1.5rem;"></i>
+                                <p class="mb-0">{{ form.errors|striptags }}</p>
+                            </div>
+                        {% endif %}
+
+                        <form method="post" id="paymentForm">
+                            {% csrf_token %}
+
+                            <!-- Payment Method Selection -->
+                            <label class="form-label fw-semibold d-block">Payment Method <span class="text-danger">*</span></label>
+                            <div class="row g-3 mb-4">
+                                {% for value, label in form.payment_method.field.choices %}
+                                    <div class="col-md-6">
+                                        <div class="payment-method-card">
+                                            <input type="radio" id="method_{{ value }}" name="payment_method" value="{{ value }}" class="form-check-input payment-radio">
+                                            <label for="method_{{ value }}" class="payment-label">
+                                                {% if value == 'gpay' %}
+                                                    <div style="text-align: center;">
+                                                        <i class="bi bi-phone" style="font-size: 2rem; color: var(--primary); display: block; margin-bottom: 0.5rem;"></i>
+                                                        <strong>{{ label }}</strong>
+                                                        <p class="text-muted small mt-2 mb-0">Pay instantly with Google Pay</p>
+                                                    </div>
+                                                {% else %}
+                                                    <div style="text-align: center;">
+                                                        <i class="bi bi-cash-coin" style="font-size: 2rem; color: var(--success); display: block; margin-bottom: 0.5rem;"></i>
+                                                        <strong>{{ label }}</strong>
+                                                        <p class="text-muted small mt-2 mb-0">Pay at pickup or on delivery</p>
+                                                    </div>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <hr style="border-color: #e2e8f0;">
+
+                            <!-- Additional Information -->
+                            <div class="mb-4">
+                                <h6 class="mb-3">Security & Terms</h6>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                    <label class="form-check-label" for="agreeTerms">
+                                        I agree to the <a href="#" style="color: var(--primary);">terms and conditions</a> <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="confirmOrder" required>
+                                    <label class="form-check-label" for="confirmOrder">
+                                        I confirm that the above order details are correct <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-3 mt-5">
+                                <button class="btn btn-lg" type="submit" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; font-weight: 600;">
+                                    <i class="bi bi-check-circle"></i> Confirm & Pay
+                                </button>
+                                <a class="btn btn-outline-secondary btn-lg" href="{% url 'spareparts:cart' %}">
+                                    <i class="bi bi-arrow-left"></i> Back to Cart
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Payment Styles -->
+<style>
+    .payment-method-card {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .payment-method-card input[type="radio"] {
+        display: none;
+    }
+
+    .payment-label {
+        padding: 1.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .payment-method-card input[type="radio"]:checked + .payment-label {
+        border-color: var(--primary);
+        background: #eff6ff;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    }
+
+    .payment-label:hover {
+        border-color: var(--primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+</style>
+
+{% endblock %}

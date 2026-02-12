@@ -1,0 +1,301 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Sign Up - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<section class="section-padding" style="background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 50%, #fce7f3 100%);">
+    <div class="container-lg">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6" data-aos="fade-up">
+                <!-- Signup Card -->
+                <div class="card border-0" style="box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);">
+                    <div class="card-body p-5">
+                        <!-- Header -->
+                        <div class="text-center mb-4">
+                            <div style="width: 80px; height: 80px; background: var(--gradient-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                                <i class="bi bi-person-plus" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h2 class="mb-2">Join EV Service</h2>
+                            <p class="text-muted">Create your account to get started</p>
+                        </div>
+
+                        <!-- Error Messages -->
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <div style="margin-left: 0.5rem; display: inline;">
+                                    {{ form.non_field_errors }}
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endif %}
+
+                        <!-- Signup Form -->
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+
+                            <!-- Account Type -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="bi bi-shield-check"></i> Account Type <span class="text-danger">*</span>
+                                </label>
+                                <div class="d-flex flex-column gap-2">
+                                    {% for radio in form.role %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                                <strong>{{ radio.choice_label }}</strong>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% if form.role.errors %}
+                                    <div class="text-danger small mt-2">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        {{ form.role.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Service Center Fields (only for service_center role) -->
+                            <div id="serviceCenterFields" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ form.center_name.id_for_label }}">
+                                        <i class="bi bi-building"></i> Name of Center <span class="text-danger">*</span>
+                                    </label>
+                                    <input
+                                        class="form-control {% if form.center_name.errors %}is-invalid{% endif %}"
+                                        id="{{ form.center_name.id_for_label }}"
+                                        name="{{ form.center_name.html_name }}"
+                                        type="text"
+                                        value="{{ form.center_name.value|default:'' }}"
+                                        placeholder="Enter service center name"
+                                    >
+                                    {% if form.center_name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                            {{ form.center_name.errors|striptags }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ form.center_phone.id_for_label }}">
+                                        <i class="bi bi-telephone"></i> Center Phone <span class="text-danger">*</span>
+                                    </label>
+                                    <input
+                                        class="form-control {% if form.center_phone.errors %}is-invalid{% endif %}"
+                                        id="{{ form.center_phone.id_for_label }}"
+                                        name="{{ form.center_phone.html_name }}"
+                                        type="tel"
+                                        value="{{ form.center_phone.value|default:'' }}"
+                                        placeholder="Enter center phone number"
+                                    >
+                                    {% if form.center_phone.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                            {{ form.center_phone.errors|striptags }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ form.center_address.id_for_label }}">
+                                        <i class="bi bi-geo-alt"></i> Address <span class="text-danger">*</span>
+                                    </label>
+                                    <input
+                                        class="form-control {% if form.center_address.errors %}is-invalid{% endif %}"
+                                        id="{{ form.center_address.id_for_label }}"
+                                        name="{{ form.center_address.html_name }}"
+                                        type="text"
+                                        value="{{ form.center_address.value|default:'' }}"
+                                        placeholder="Enter center address"
+                                    >
+                                    {% if form.center_address.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                            {{ form.center_address.errors|striptags }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div id="userFields">
+                                <!-- First Name Field -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ form.full_name.id_for_label }}">
+                                        <i class="bi bi-person-badge"></i> First Name <span class="text-danger">*</span>
+                                    </label>
+                                    <input
+                                        class="form-control {% if form.full_name.errors %}is-invalid{% endif %}"
+                                        id="{{ form.full_name.id_for_label }}"
+                                        name="{{ form.full_name.html_name }}"
+                                        type="text"
+                                        value="{{ form.full_name.value|default:'' }}"
+                                        autocomplete="name"
+                                        placeholder="Enter your first name"
+                                    >
+                                    {% if form.full_name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                            {{ form.full_name.errors|striptags }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Phone Number Field -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ form.phone_number.id_for_label }}">
+                                        <i class="bi bi-telephone"></i> Phone Number <span class="text-danger">*</span>
+                                    </label>
+                                    <input
+                                        class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}"
+                                        id="{{ form.phone_number.id_for_label }}"
+                                        name="{{ form.phone_number.html_name }}"
+                                        type="tel"
+                                        value="{{ form.phone_number.value|default:'' }}"
+                                        autocomplete="tel"
+                                        placeholder="Enter your phone number"
+                                        inputmode="numeric"
+                                        pattern="\\d{10}"
+                                        minlength="10"
+                                        maxlength="10"
+                                    >
+                                    {% if form.phone_number.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                            {{ form.phone_number.errors|striptags }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Username Field -->
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ form.username.id_for_label }}">
+                                    <i class="bi bi-at"></i> Username <span class="text-danger">*</span>
+                                </label>
+                                <input
+                                    class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                                    id="{{ form.username.id_for_label }}"
+                                    name="{{ form.username.html_name }}"
+                                    type="text"
+                                    value="{{ form.username.value|default:'' }}"
+                                    autocomplete="username"
+                                    placeholder="Choose a unique username"
+                                    required
+                                >
+                                {% if form.username.help_text %}
+                                    <div class="form-text small">{{ form.username.help_text|safe }}</div>
+                                {% endif %}
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        {{ form.username.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Password Field -->
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ form.password1.id_for_label }}">
+                                    <i class="bi bi-key"></i> Password <span class="text-danger">*</span>
+                                </label>
+                                <input
+                                    class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+                                    id="{{ form.password1.id_for_label }}"
+                                    name="{{ form.password1.html_name }}"
+                                    type="password"
+                                    autocomplete="new-password"
+                                    placeholder="Create a strong password"
+                                    required
+                                >
+                                {% if form.password1.help_text %}
+                                    <div class="form-text small">{{ form.password1.help_text|safe }}</div>
+                                {% endif %}
+                                {% if form.password1.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        {{ form.password1.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Confirm Password Field -->
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ form.password2.id_for_label }}">
+                                    <i class="bi bi-lock-check"></i> Confirm Password <span class="text-danger">*</span>
+                                </label>
+                                <input
+                                    class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+                                    id="{{ form.password2.id_for_label }}"
+                                    name="{{ form.password2.html_name }}"
+                                    type="password"
+                                    autocomplete="new-password"
+                                    placeholder="Re-enter your password"
+                                    required
+                                >
+                                {% if form.password2.help_text %}
+                                    <div class="form-text small">{{ form.password2.help_text|safe }}</div>
+                                {% endif %}
+                                {% if form.password2.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        {{ form.password2.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button class="btn btn-primary btn-lg w-100 mb-3" type="submit">
+                                <i class="bi bi-check-circle"></i> Create Account
+                            </button>
+                        </form>
+
+                        <script>
+                            (function(){
+                                function toggleServiceCenterFields(){
+                                    var selected = document.querySelector('input[name="{{ form.role.html_name }}"]:checked');
+                                    var isServiceCenter = selected && selected.value === "service_center";
+                                    var scSection = document.getElementById('serviceCenterFields');
+                                    var userSection = document.getElementById('userFields');
+                                    if(scSection){
+                                        scSection.style.display = isServiceCenter ? 'block' : 'none';
+                                    }
+                                    if(userSection){
+                                        userSection.style.display = isServiceCenter ? 'none' : 'block';
+                                    }
+                                }
+                                document.addEventListener('change', function(e){
+                                    if(e.target && e.target.name === "{{ form.role.html_name }}"){
+                                        toggleServiceCenterFields();
+                                    }
+                                });
+                                document.addEventListener('DOMContentLoaded', toggleServiceCenterFields);
+                            })();
+                        </script>
+
+                        <!-- Divider -->
+                        <div style="display: flex; align-items: center; margin: 1.5rem 0;">
+                            <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                            <div style="padding: 0 1rem; color: #94a3b8; font-size: 0.875rem;">OR</div>
+                            <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                        </div>
+
+                        <!-- Login Link -->
+                        <a class="btn btn-outline-primary btn-lg w-100 mb-3" href="{% url 'accounts:login' %}">
+                            <i class="bi bi-box-arrow-in-right"></i> Back to Login
+                        </a>
+
+                        <!-- Terms -->
+                        <p class="text-muted small text-center mb-0 mt-3">
+                            By creating an account, you agree to our Terms of Service and Privacy Policy
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

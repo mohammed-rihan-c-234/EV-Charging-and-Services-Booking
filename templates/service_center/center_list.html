@@ -1,0 +1,173 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Service Centers - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fef3c7 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center justify-content-between">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-shop" style="color: var(--primary);"></i> Service Centers
+                </h1>
+                <p class="text-muted mb-0">Find and connect with professional EV service centers near you</p>
+            </div>
+            <div class="col-auto d-flex gap-2" data-aos="fade-left">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'bookings:my_bookings' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar-check"></i> Booking History
+                    </a>
+                {% endif %}
+                {% if user.is_staff %}
+                    <a class="btn btn-success" href="/admin/service_center/servicecenter/add/">
+                        <i class="bi bi-plus-circle"></i> Add Center
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Service Centers Grid -->
+<section class="section-padding">
+    <div class="container-lg">
+        {% if centers %}
+            <div class="row g-4">
+                {% for center in centers %}
+                    <div class="col-lg-6 col-md-12" data-aos="fade-up">
+                        <div class="card h-100 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border-left: 4px solid var(--primary);">
+                            <div class="card-body p-4">
+                                <!-- Header -->
+                                <div class="d-flex align-items-start justify-content-between mb-3">
+                                    <div>
+                                        <h5 class="card-title mb-1">{{ center.name }}</h5>
+                                        <p class="text-muted small mb-0">
+                                            <i class="bi bi-telephone-fill" style="color: var(--primary); margin-right: 0.5rem;"></i>
+                                            {{ center.phone }}
+                                        </p>
+                                    </div>
+                                    <span class="badge" style="background: var(--success); color: white; padding: 0.5rem 1rem;">
+                                        <i class="bi bi-check-circle-fill"></i> Active
+                                    </span>
+                                </div>
+
+                                <!-- Address -->
+                                <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                                    <p class="text-muted small mb-2">
+                                        <i class="bi bi-geo-alt-fill" style="color: var(--warning); margin-right: 0.5rem;"></i>
+                                        <strong>Location</strong>
+                                    </p>
+                                    <p class="mb-0">{{ center.address }}</p>
+                                </div>
+
+                                <!-- Operating Hours -->
+                                <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                                    <p class="text-muted small mb-2">
+                                        <i class="bi bi-clock-fill" style="color: var(--info); margin-right: 0.5rem;"></i>
+                                        <strong>Operating Hours</strong>
+                                    </p>
+                                    <p class="mb-0">{{ center.operating_hours|default:"Not specified" }}</p>
+                                </div>
+
+                                <!-- Services Offered -->
+                                <div class="mb-4">
+                                    <p class="text-muted small mb-2">
+                                        <i class="bi bi-tools" style="color: var(--secondary); margin-right: 0.5rem;"></i>
+                                        <strong>Services</strong>
+                                    </p>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <span class="badge" style="background: #e0e7ff; color: var(--primary);">
+                                            <i class="bi bi-lightning-charge-fill"></i> EV Charging
+                                        </span>
+                                        <span class="badge" style="background: #dbeafe; color: #0369a1;">
+                                            <i class="bi bi-wrench"></i> Maintenance
+                                        </span>
+                                        <span class="badge" style="background: #d1fae5; color: var(--success);">
+                                            <i class="bi bi-tools"></i> Repair
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-grid gap-2">
+                                    {% if center.latitude and center.longitude %}
+                                        <a href="/map/?dest_lat={{ center.latitude }}&dest_lng={{ center.longitude }}&dest_name={{ center.name|urlencode }}&dest_kind=service_center" class="btn btn-outline-primary">
+                                            <i class="bi bi-map"></i> View on Map
+                                        </a>
+                                    {% endif %}
+                                    {% if user.is_authenticated %}
+                                        <a href="{% url 'bookings:booking_create' %}" class="btn" style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); color: white; border: none;">
+                                            <i class="bi bi-calendar-event"></i> Book Service Here
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'accounts:login' %}" class="btn btn-primary">
+                                            <i class="bi bi-lock"></i> Login to Book Service
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="text-center py-5">
+                        <div style="font-size: 4rem; color: #cbd5e1; margin-bottom: 1rem;">
+                            <i class="bi bi-inbox"></i>
+                        </div>
+                        <h3 class="text-muted mb-3">No Service Centers Available</h3>
+                        <p class="text-muted mb-4">Service centers are being added. Please check back soon.</p>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'bookings:my_bookings' %}" class="btn btn-primary btn-lg">
+                                <i class="bi bi-calendar-check"></i> View My Bookings
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="section-padding" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <h2 class="text-center mb-5" data-aos="fade-up">Why Choose Our Service Centers?</h2>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                        <i class="bi bi-shield-check" style="font-size: 2rem;"></i>
+                    </div>
+                    <h6>Certified Technicians</h6>
+                    <p class="small text-muted">Trained professionals with EV expertise</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                        <i class="bi bi-lightning-charge-fill" style="font-size: 2rem;"></i>
+                    </div>
+                    <h6>Quick Service</h6>
+                    <p class="small text-muted">Fast turnaround with quality assurance</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                        <i class="bi bi-award-fill" style="font-size: 2rem;"></i>
+                    </div>
+                    <h6>Quality Warranty</h6>
+                    <p class="small text-muted">Warranty coverage on all services</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

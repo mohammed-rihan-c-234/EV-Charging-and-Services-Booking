@@ -1,0 +1,153 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}SOS Alerts - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 50%, #fca5a5 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center justify-content-between">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-exclamation-triangle" style="color: var(--danger);"></i> SOS Alerts
+                </h1>
+                <p class="text-muted mb-0">Recent emergency alerts and service center notifications</p>
+            </div>
+            <div class="col-auto" data-aos="fade-left">
+                <a class="btn btn-danger btn-lg" href="{% url 'sos:submit' %}">
+                    <i class="bi bi-telephone-outbound"></i> Submit SOS Alert
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SOS Alerts List -->
+<section class="section-padding">
+    <div class="container-lg">
+        {% if alerts %}
+            <div class="row g-4">
+                {% for alert in alerts %}
+                    <div class="col-lg-6" data-aos="fade-up">
+                        <div class="card h-100 border-0" style="box-shadow: 0 10px 25px rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger);">
+                            <div class="card-body p-4">
+                                <!-- Header -->
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="card-title mb-1">
+                                            <i class="bi bi-person-fill" style="color: var(--danger); margin-right: 0.5rem;"></i>
+                                            {{ alert.user.username|default:"Anonymous User" }}
+                                        </h5>
+                                        <p class="text-muted small mb-0">
+                                            <i class="bi bi-clock-history" style="margin-right: 0.5rem;"></i>
+                                            {{ alert.created_at|date:"M d, Y - h:i A" }}
+                                        </p>
+                                    </div>
+                                    <span class="badge" style="background: {% if alert.status == 'resolved' %}var(--success){% elif alert.status == 'ack' %}var(--warning){% else %}var(--danger){% endif %}; color: white; padding: 0.5rem 1rem;">
+                                        {{ alert.get_status_display }}
+                                    </span>
+                                </div>
+
+                                <!-- Alert Details -->
+                                <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                                    <p class="text-muted small mb-2"><strong>Issue Description:</strong></p>
+                                    <p class="mb-0">{{ alert.message|default:"No description provided" }}</p>
+                                </div>
+
+                                <!-- Vehicle Information -->
+                                {% if alert.vehicle_plate or alert.vehicle %}
+                                    <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                                        <p class="text-muted small mb-2"><strong>Vehicle Information:</strong></p>
+                                        {% if alert.vehicle %}
+                                            <p class="mb-1">
+                                                <i class="bi bi-car-front" style="color: var(--info);"></i>
+                                                {{ alert.vehicle.make }} {{ alert.vehicle.model }}
+                                            </p>
+                                        {% endif %}
+                                        {% if alert.vehicle_plate %}
+                                            <p class="mb-0">
+                                                <i class="bi bi-tags" style="color: var(--primary);"></i>
+                                                <strong>{{ alert.vehicle_plate }}</strong>
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+
+                                <!-- Location -->
+                                {% if alert.latitude and alert.longitude %}
+                                    <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                                        <p class="text-muted small mb-2"><strong>Location:</strong></p>
+                                        <p class="mb-0">
+                                            <i class="bi bi-geo-alt-fill" style="color: var(--success);"></i>
+                                            {{ alert.latitude }}, {{ alert.longitude }}
+                                        </p>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Contact Information -->
+                                {% if alert.contact %}
+                                    <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                                        <p class="text-muted small mb-2"><strong>Contact Number:</strong></p>
+                                        <p class="mb-0">
+                                            <i class="bi bi-telephone" style="color: var(--info);"></i>
+                                            {{ alert.contact }}
+                                        </p>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Assigned Service Centers -->
+                                {% with assigned=alert.assigned_centers.all %}
+                                    {% if assigned %}
+                                        <div>
+                                            <p class="text-muted small mb-2"><strong>Notified Service Centers:</strong></p>
+                                            <div class="row g-2">
+                                                {% for assignment in assigned %}
+                                                    <div class="col-12">
+                                                        <div class="p-2" style="background: #f8fafc; border-radius: 0.5rem; border-left: 3px solid var(--success);">
+                                                            <p class="mb-1 small fw-semibold">{{ assignment.center.name }}</p>
+                                                            <p class="mb-1 small text-muted">
+                                                                <i class="bi bi-geo-alt"></i> {{ assignment.distance_km }} km away
+                                                            </p>
+                                                            {% if assignment.center.phone %}
+                                                                <p class="mb-0 small text-muted">
+                                                                    <i class="bi bi-telephone"></i> {{ assignment.center.phone }}
+                                                                </p>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning alert-sm" style="margin: 0;">
+                                            <i class="bi bi-exclamation-circle"></i> No nearby service centers found
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="text-center py-5">
+                        <div style="font-size: 4rem; color: #cbd5e1; margin-bottom: 1rem;">
+                            <i class="bi bi-inbox"></i>
+                        </div>
+                        <h3 class="text-muted mb-3">No SOS Alerts</h3>
+                        <p class="text-muted mb-4">No emergency alerts have been submitted yet</p>
+                        <a href="{% url 'sos:submit' %}" class="btn btn-danger btn-lg">
+                            <i class="bi bi-telephone-outbound"></i> Submit SOS Alert
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

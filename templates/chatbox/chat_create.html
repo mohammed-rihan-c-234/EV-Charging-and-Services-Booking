@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h2 class="h4 mb-1">Start a Chat</h2>
+      <p class="text-muted small mb-4">Type a message to start a chat session.</p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label" for="id_message">Message</label>
+          {{ form.message }}
+        </div>
+        <button type="submit" class="btn btn-primary">Start Chat</button>
+        <button type="button" class="btn btn-secondary btn-clear" data-confirm="false">Clear</button>
+        <a href="{% url 'chatbox:list' %}" class="btn btn-link">Cancel</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

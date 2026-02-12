@@ -1,0 +1,114 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Razorpay Payment - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<section class="section-padding" style="background: linear-gradient(135deg, #f0f9ff 0%, #eef2ff 50%, #fce7f3 100%);">
+    <div class="container-lg">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6" data-aos="fade-up">
+                <div class="card border-0" style="box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div style="width: 80px; height: 80px; background: var(--gradient-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                                <i class="bi bi-credit-card-2-front" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h2 class="mb-2">Razorpay Payment</h2>
+                            <p class="text-muted">Complete your booking payment securely</p>
+                        </div>
+
+                        <div class="p-4 mb-4" style="background: #f8fafc; border-radius: 0.75rem;">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Booking ID</span>
+                                <strong>#{{ booking.id }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Amount</span>
+                                <strong style="color: var(--primary);">₹{{ amount_display }}</strong>
+                            </div>
+                        </div>
+
+                        <form id="razorpayVerifyForm" method="post" action="{% url 'bookings:razorpay_verify' booking.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+                            <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+                            <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+                        </form>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary btn-lg" type="button" id="rzp-button">
+                                <i class="bi bi-shield-check"></i> Pay with Razorpay
+                            </button>
+                            <a href="{% url 'bookings:checkout' booking.pk %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Payment
+                            </a>
+                        </div>
+
+                        <p class="text-muted small text-center mt-4 mb-0">
+                            Razorpay Test Mode is enabled.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    (function(){
+        var options = {
+            key: "{{ razorpay_key_id }}",
+            amount: "{{ amount_paise }}",
+            currency: "INR",
+            name: "EV Service Platform",
+            description: "Service Booking #{{ booking.id }}",
+            order_id: "{{ razorpay_order_id }}",
+            method: {
+                card: true,
+                netbanking: true,
+                wallet: true,
+                emi: true,
+                paylater: true,
+                upi: true
+            },
+            config: {
+                display: {
+                    preferences: { show_default_blocks: true }
+                }
+            },
+            handler: function (response){
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                document.getElementById('razorpayVerifyForm').submit();
+            },
+            modal: {
+                ondismiss: function(){
+                    alert('Payment was cancelled. Please try again.');
+                }
+            },
+            prefill: {
+                name: "{{ request.user.username }}",
+                email: "{{ request.user.email|default:'' }}",
+                contact: "{{ request.user.profile.phone_number|default:'' }}"
+            },
+            theme: { color: "#2563eb" }
+        };
+        var rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response){
+            alert('Payment failed: ' + (response.error && response.error.description ? response.error.description : 'Unknown error'));
+        });
+        var btn = document.getElementById('rzp-button');
+        if(btn){
+            btn.onclick = function(e){
+                e.preventDefault();
+                rzp.open();
+            };
+        }
+    })();
+</script>
+
+{% endblock %}

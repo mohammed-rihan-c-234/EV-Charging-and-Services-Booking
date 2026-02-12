@@ -1,0 +1,229 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}My Profile - EV Service Platform{% endblock %}
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fef3c7 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-person-circle" style="color: var(--primary);"></i> My Profile
+                </h1>
+                <p class="text-muted mb-0">Manage your account information and preferences</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Profile Content -->
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="row g-4">
+            <!-- Profile Summary Card -->
+            <div class="col-lg-4" data-aos="fade-right">
+                <div class="card h-100 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-body text-center p-4">
+                        <!-- Avatar -->
+                        <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 3rem;">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        
+                        <!-- User Name -->
+                        <h3 class="mb-1">{{ user.username }}</h3>
+                        {% if user.first_name %}
+                            <p class="text-muted mb-3">{{ user.first_name }} {{ user.last_name }}</p>
+                        {% endif %}
+                        
+                        <!-- Account Type Badge -->
+                        {% if profile %}
+                            <div class="mb-4">
+                                {% if profile.role == 'service_center' %}
+                                    <span class="badge" style="background: var(--primary); color: white; padding: 0.5rem 1rem; font-size: 0.875rem;">Service Center Account</span>
+                                {% else %}
+                                    <span class="badge" style="background: var(--success); color: white; padding: 0.5rem 1rem; font-size: 0.875rem;">Regular Customer</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Quick Info -->
+                        <div class="text-start mt-4 p-3" style="background: #f8fafc; border-radius: 0.75rem; border-left: 4px solid var(--primary);">
+                            {% if user.email %}
+                                <div class="mb-3">
+                                    <label class="text-muted small mb-1 d-block"><i class="bi bi-envelope" style="color: var(--primary); margin-right: 0.5rem;"></i> Email</label>
+                                    <p class="mb-0 fw-semibold">{{ user.email }}</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if profile.phone_number %}
+                                <div>
+                                    <label class="text-muted small mb-1 d-block"><i class="bi bi-telephone" style="color: var(--primary); margin-right: 0.5rem;"></i> Phone</label>
+                                    <p class="mb-0 fw-semibold">{{ profile.phone_number }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 mt-4">
+                            <a href="{% url 'accounts:profile_edit' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-pencil-square"></i> Edit Profile
+                            </a>
+                            <a href="{% url 'bookings:my_bookings' %}" class="btn btn-primary">
+                                <i class="bi bi-calendar-check"></i> My Bookings
+                            </a>
+                            <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger">
+                                <i class="bi bi-box-arrow-right"></i> Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Details -->
+            <div class="col-lg-8" data-aos="fade-left">
+                <!-- Account Information -->
+                <div class="card border-0 mb-4" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-header" style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); color: white; border: none; padding: 1.5rem;">
+                        <h5 class="mb-0"><i class="bi bi-person-badge"></i> Account Information</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="text-muted small mb-2 d-block"><strong>Username</strong></label>
+                                <p class="fw-semibold">@{{ user.username }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small mb-2 d-block"><strong>Email Address</strong></label>
+                                <p class="fw-semibold">{{ user.email|default:"Not provided" }}</p>
+                            </div>
+                            {% if profile.full_name %}
+                                <div class="col-md-6">
+                                    <label class="text-muted small mb-2 d-block"><strong>Full Name</strong></label>
+                                    <p class="fw-semibold">{{ profile.full_name }}</p>
+                                </div>
+                            {% endif %}
+                            {% if profile.phone_number %}
+                                <div class="col-md-6">
+                                    <label class="text-muted small mb-2 d-block"><strong>Phone Number</strong></label>
+                                    <p class="fw-semibold">{{ profile.phone_number }}</p>
+                                </div>
+                            {% endif %}
+                            <div class="col-12">
+                                <label class="text-muted small mb-2 d-block"><strong>Account Type</strong></label>
+                                {% if profile.role == 'service_center' %}
+                                    <span class="badge" style="background: var(--primary); color: white; padding: 0.5rem 1rem;">Service Center</span>
+                                {% else %}
+                                    <span class="badge" style="background: var(--success); color: white; padding: 0.5rem 1rem;">Customer Account</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registered Vehicles -->
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; padding: 1.5rem;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-car-front-fill"></i> My Vehicles</h5>
+                            <a href="{% url 'vehicles:list' %}" class="btn btn-sm btn-light">
+                                <i class="bi bi-plus-circle"></i> Add Vehicle
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if user.vehicles.all %}
+                            <div class="row g-3">
+                                {% for vehicle in user.vehicles.all %}
+                                    <div class="col-md-6">
+                                        <div class="p-3" style="background: #f8fafc; border-radius: 0.75rem; border-left: 4px solid var(--success);">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="mb-0">
+                                                    <i class="bi bi-car-front" style="color: var(--success); margin-right: 0.5rem;"></i>
+                                                    {{ vehicle.make }} {{ vehicle.model }}
+                                                </h6>
+                                                {% if vehicle.year %}
+                                                    <span class="badge" style="background: var(--info); color: white;">{{ vehicle.year }}</span>
+                                                {% endif %}
+                                            </div>
+                                            {% if vehicle.license_plate %}
+                                                <p class="mb-2 small">
+                                                    <strong style="color: var(--primary);">
+                                                        <i class="bi bi-tags"></i> {{ vehicle.license_plate }}
+                                                    </strong>
+                                                </p>
+                                            {% endif %}
+                                            <p class="mb-0 small text-muted">Registered to: {{ vehicle.owner_name }}</p>
+                                            <a href="{% url 'vehicles:detail' vehicle.pk %}" class="btn btn-sm btn-outline-primary mt-2">
+                                                <i class="bi bi-eye"></i> View Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <div style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;">
+                                    <i class="bi bi-car-front"></i>
+                                </div>
+                                <p class="text-muted mb-3">No vehicles registered yet</p>
+                                <a href="{% url 'vehicles:list' %}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-plus-circle"></i> Add Your First Vehicle
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row g-4 mt-4">
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="card border-0 text-center" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-body p-4">
+                        <div style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;">
+                            <i class="bi bi-bookmark-check"></i>
+                        </div>
+                        <h6>My Bookings</h6>
+                        <p class="text-muted small mb-3">View all your service bookings</p>
+                        <a href="{% url 'bookings:my_bookings' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-arrow-right"></i> View
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card border-0 text-center" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-body p-4">
+                        <div style="font-size: 2rem; color: var(--success); margin-bottom: 1rem;">
+                            <i class="bi bi-lightning-charge"></i>
+                        </div>
+                        <h6>Charging Stations</h6>
+                        <p class="text-muted small mb-3">Find nearby charging stations</p>
+                        <a href="{% url 'charging:list' %}" class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-arrow-right"></i> View
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card border-0 text-center" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-body p-4">
+                        <div style="font-size: 2rem; color: var(--danger); margin-bottom: 1rem;">
+                            <i class="bi bi-telephone-outbound"></i>
+                        </div>
+                        <h6>Emergency SOS</h6>
+                        <p class="text-muted small mb-3">Get help in emergencies</p>
+                        <a href="{% url 'sos:submit' %}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-arrow-right"></i> Alert
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

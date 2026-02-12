@@ -1,0 +1,104 @@
+{% extends 'base_new.html' %}
+
+{% block title %}My Charging Bookings - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<section style="background: linear-gradient(135deg, #ecfeff 0%, #e0f2fe 60%, #fef3c7 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center justify-content-between">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-plug-fill" style="color: var(--success);"></i> My Charging Bookings
+                </h1>
+                <p class="text-muted mb-0">Track your upcoming and completed charging sessions</p>
+            </div>
+            <div class="col-auto" data-aos="fade-left">
+                <a href="{% url 'charging:list' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-lightning-charge"></i> Find Stations
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container-lg">
+        {% if bookings %}
+            <div class="row g-4">
+                {% for booking in bookings %}
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                        <div class="card h-100 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border-left: 4px solid var(--success);">
+                            <div class="card-body">
+                                <div class="mb-3 d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="text-muted small mb-1">{{ booking.station.name }}</h6>
+                                        <h5>Charging Session</h5>
+                                    </div>
+                                    <span class="badge" style="background: {% if booking.status == 'confirmed' %}var(--success){% elif booking.status == 'pending' %}var(--warning){% else %}var(--danger){% endif %}; color: white;">
+                                        {{ booking.get_status_display }}
+                                    </span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center text-muted small mb-2">
+                                        <i class="bi bi-calendar-event" style="color: var(--success); margin-right: 0.5rem;"></i>
+                                        {{ booking.scheduled_at|date:"M d, Y - h:i A" }}
+                                    </div>
+                                    <div class="d-flex align-items-center text-muted small mb-2">
+                                        <i class="bi bi-clock-history" style="color: var(--success); margin-right: 0.5rem;"></i>
+                                        {{ booking.duration_hours }} hour(s)
+                                    </div>
+                                    <div class="d-flex align-items-center text-muted small">
+                                        <i class="bi bi-currency-rupee" style="color: var(--success); margin-right: 0.5rem;"></i>
+                                        &#8377;{{ booking.amount }}
+                                    </div>
+                                </div>
+
+                                <div class="p-2 mb-3" style="background: #f8fafc; border-radius: 0.5rem;">
+                                    <div class="d-flex justify-content-between text-muted small">
+                                        <span>Payment:</span>
+                                        <span>
+                                            <span class="badge" style="background: {% if booking.payment_status == 'paid' %}var(--success){% else %}var(--warning){% endif %}; color: white; font-size: 0.75rem;">
+                                                {{ booking.get_payment_status_display }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid">
+                                    {% if booking.payment_status != 'paid' %}
+                                        <a href="{% url 'charging:razorpay_payment' booking.pk %}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-credit-card"></i> Complete Payment
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'charging:booking_confirmation' booking.pk %}" class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-geo-alt-fill"></i> View Confirmation
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="text-center py-5">
+                        <div style="font-size: 4rem; color: #cbd5e1; margin-bottom: 1rem;">
+                            <i class="bi bi-battery"></i>
+                        </div>
+                        <h3 class="text-muted mb-3">No Charging Bookings Yet</h3>
+                        <p class="text-muted mb-4">Find a nearby station and book your first charging session.</p>
+                        <a href="{% url 'charging:list' %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-lightning-charge"></i> Find Stations
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

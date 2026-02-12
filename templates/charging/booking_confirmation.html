@@ -1,0 +1,181 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Booking Confirmation - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fef3c7 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-check-circle" style="color: var(--success);"></i> Booking Confirmed
+                </h1>
+                <p class="text-muted mb-0">Your charging session has been reserved</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Confirmation Content -->
+<section class="section-padding">
+    <div class="container-lg">
+        <!-- Success Message -->
+        <div class="row justify-content-center mb-5" data-aos="fade-up">
+            <div class="col-lg-8">
+                <div class="alert alert-success d-flex align-items-center" style="border: 3px solid var(--success); background: #d1fae5; color: #065f46; padding: 1.5rem; border-radius: 0.75rem;">
+                    <i class="bi bi-check-circle-fill me-3" style="font-size: 2rem;"></i>
+                    <div>
+                        <h5 class="mb-1">Booking Confirmed!</h5>
+                        <p class="mb-0">Your charging slot at <strong>{{ station.name }}</strong> is now reserved. Proceed to the station and park your vehicle.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Booking Details -->
+            <div class="col-lg-4" data-aos="fade-right">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; padding: 1.5rem;">
+                        <h5 class="mb-0"><i class="bi bi-receipt"></i> Booking Details</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Booking ID -->
+                        <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                            <p class="text-muted small mb-2">Booking ID</p>
+                            <p class="mb-0"><strong>#{{ station.id }}001</strong></p>
+                        </div>
+
+                        <!-- Station Name -->
+                        <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                            <p class="text-muted small mb-2">Station Name</p>
+                            <p class="mb-0"><strong>{{ station.name }}</strong></p>
+                        </div>
+
+                        <!-- Duration -->
+                        <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                            <p class="text-muted small mb-2">Duration</p>
+                            <p class="mb-0"><strong>2 Hours</strong></p>
+                        </div>
+
+                        <!-- Booked Time -->
+                        <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                            <p class="text-muted small mb-2">Booked At</p>
+                            <p class="mb-0"><strong>Just Now</strong></p>
+                        </div>
+
+                        <!-- Status -->
+                        <div>
+                            <p class="text-muted small mb-2">Status</p>
+                            <span class="badge" style="background: var(--success); color: white; padding: 0.5rem 1rem;">Confirmed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-3 d-grid gap-2">
+                    <a href="{% url 'charging:list' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-list"></i> View All Stations
+                    </a>
+                    <a href="{% url 'home' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); border: none;">
+                        <i class="bi bi-house"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+
+            <!-- Map Section -->
+            <div class="col-lg-8" data-aos="fade-left">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); overflow: hidden;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); color: white; border: none; padding: 1.5rem;">
+                        <h5 class="mb-0"><i class="bi bi-map"></i> Station Location & Nearby Chargers</h5>
+                    </div>
+                    <div id="map" style="height: 400px; width: 100%;"></div>
+                    <div class="card-footer" style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 1rem;">
+                        <p class="mb-0 text-muted small" id="mapStatus">
+                            <i class="bi bi-info-circle"></i> Loading map...
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information -->
+        <div class="row mt-5">
+            <div class="col-md-6" data-aos="fade-up">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-body p-4">
+                        <h6 class="mb-3"><i class="bi bi-clock-history"></i> Estimated Time</h6>
+                        <p class="small text-muted mb-0">Your EV will be fully charged in approximately 2 hours. Standard charging rate applies.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-body p-4">
+                        <h6 class="mb-3"><i class="bi bi-shield-check"></i> Safety & Security</h6>
+                        <p class="small text-muted mb-0">The station is monitored 24/7 with CCTV. Your vehicle is protected with our comprehensive insurance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Libraries -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    (function(){
+        var statusEl = document.getElementById('mapStatus');
+        function setStatus(msg){ 
+            if(statusEl) statusEl.innerHTML = '<i class="bi bi-info-circle"></i> ' + (msg || '');
+        }
+
+        var stationLat = parseFloat('{{ station.latitude|default:"20.5937" }}');
+        var stationLng = parseFloat('{{ station.longitude|default:"78.9629" }}');
+        
+        var map = L.map('map').setView([stationLat, stationLng], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var stationMarker = L.circleMarker([stationLat, stationLng], {
+            radius: 15,
+            color: '#10b981',
+            fillColor: '#10b981',
+            fillOpacity: 0.8,
+            weight: 3
+        });
+        stationMarker.bindPopup('<strong>{{ station.name }}</strong><br>Your Booked Station<br>{{ station.address|default:"" }}').addTo(map).openPopup();
+
+        // Load and display nearby stations
+        fetch('{% url "charging:api_stations" %}')
+            .then(r => r.json())
+            .then(data => {
+                var bookedStationId = parseInt('{{ station.id|escapejs }}');
+                if(data.stations && Array.isArray(data.stations)){
+                    data.stations.forEach(function(s){
+                        if(s.id !== bookedStationId){
+                            var marker = L.circleMarker([s.latitude, s.longitude], {
+                                radius: 10,
+                                color: '#06b6d4',
+                                fillColor: '#06b6d4',
+                                fillOpacity: 0.6,
+                                weight: 2
+                            });
+                            marker.bindPopup('<strong>' + s.name + '</strong><br>Available: ' + s.available_slots);
+                            marker.addTo(map);
+                        }
+                    });
+                }
+                setStatus('Showing your booked station (green) and nearby stations (blue)');
+            })
+            .catch(e => setStatus('Error loading nearby stations'));
+    })();
+</script>
+
+{% endblock %}

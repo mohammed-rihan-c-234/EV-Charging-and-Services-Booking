@@ -1,0 +1,29 @@
+<!-- Hero Section Template Include -->
+{% block hero_content %}
+<section class="hero">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-up">
+                <h1 class="display-4 fw-bold mb-4">
+                    {% block hero_title %}Welcome{% endblock %}
+                </h1>
+                <p class="lead mb-4 text-muted">
+                    {% block hero_subtitle %}Your content here{% endblock %}
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    {% block hero_buttons %}
+                    <a href="#" class="btn btn-primary btn-lg">Get Started</a>
+                    {% endblock %}
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                {% block hero_image %}
+                <div style="background: var(--gradient-primary); border-radius: 20px; padding: 40px; text-align: center; color: white;">
+                    <i class="bi bi-lightning-charge" style="font-size: 6rem; opacity: 0.9;"></i>
+                </div>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

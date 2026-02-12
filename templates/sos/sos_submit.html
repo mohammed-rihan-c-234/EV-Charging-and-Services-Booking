@@ -1,0 +1,175 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Emergency SOS - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 50%, #fca5a5 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-telephone-outbound" style="color: var(--danger);"></i> Emergency SOS
+                </h1>
+                <p class="text-muted mb-0">Get immediate assistance when you need it most</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Alert -->
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8" data-aos="fade-up">
+                <div class="alert alert-danger alert-lg" style="border-left: 5px solid var(--danger); background: rgba(239, 68, 68, 0.05);">
+                    <i class="bi bi-exclamation-triangle" style="font-size: 1.5rem;"></i>
+                    <strong class="ms-2">For Life-Threatening Emergencies:</strong>
+                    <p class="mt-2 mb-0">Always call emergency services first (911) if you or anyone is in immediate danger.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOS Form -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+                <div class="card border-0" style="box-shadow: 0 20px 40px rgba(239, 68, 68, 0.15);">
+                    <div class="card-body p-5">
+                        <h3 class="mb-4">Submit SOS Alert</h3>
+                        <p class="text-muted mb-4">Fill in the following information so we can help you quickly. Your location will be shared with nearby service centers.</p>
+
+                        <form method="post" id="sosForm">
+                            {% csrf_token %}
+
+                            <!-- Vehicle Selection -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="bi bi-car-front"></i> <strong>Vehicle</strong> <span class="text-danger">*</span>
+                                </label>
+                                {{ form.vehicle }}
+                                {% if form.vehicle.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.vehicle.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Location Section -->
+                            <div class="mb-4">
+                                <label class="form-label"><strong>Your Location</strong> <span class="text-danger">*</span></label>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small">Latitude <span class="text-danger">*</span></label>
+                                        {{ form.latitude }}
+                                        {% if form.latitude.errors %}
+                                            <div class="invalid-feedback d-block">{{ form.latitude.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small">Longitude <span class="text-danger">*</span></label>
+                                        {{ form.longitude }}
+                                        {% if form.longitude.errors %}
+                                            <div class="invalid-feedback d-block">{{ form.longitude.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <button type="button" id="useLocationBtn" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="bi bi-geo-alt-fill"></i> Use My Current Location
+                                </button>
+                            </div>
+
+                            <!-- Issue Description -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="bi bi-chat-left-text"></i> <strong>Describe the Issue</strong> <span class="text-danger">*</span>
+                                </label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.description.errors|striptags }}</div>
+                                {% endif %}
+                                <small class="form-text">Be as specific as possible (mechanical failure, accident, breakdown, etc.)</small>
+                            </div>
+
+                            <!-- Contact Info -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="bi bi-telephone"></i> <strong>Contact Number</strong> <span class="text-danger">*</span>
+                                </label>
+                                {{ form.contact_number }}
+                                {% if form.contact_number.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.contact_number.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-danger btn-lg w-100" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                                <i class="bi bi-telephone-outbound"></i> Send SOS Alert
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- What Happens Next -->
+<section class="section-padding" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <h2 class="text-center mb-5" data-aos="fade-up">What Happens After You Submit</h2>
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                        <h4 class="mb-0">1</h4>
+                    </div>
+                    <h6>Instant Notification</h6>
+                    <p class="small text-muted">Your SOS alert is sent immediately to nearby service centers</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                        <h4 class="mb-0">2</h4>
+                    </div>
+                    <h6>Quick Response</h6>
+                    <p class="small text-muted">We contact you within minutes with assistance options</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                        <h4 class="mb-0">3</h4>
+                    </div>
+                    <h6>Professional Help</h6>
+                    <p class="small text-muted">Dispatch nearest certified technician to your location</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                        <h4 class="mb-0">4</h4>
+                    </div>
+                    <h6>Resolution</h6>
+                    <p class="small text-muted">Get roadside assistance or towing services as needed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById('useLocationBtn').addEventListener('click', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById('id_latitude').value = position.coords.latitude;
+                document.getElementById('id_longitude').value = position.coords.longitude;
+                alert('Location updated! ✓');
+            });
+        } else {
+            alert('Geolocation is not supported by your browser.');
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% if bookings %}
+  <div class="table-responsive">
+    <table class="table table-striped align-middle mb-0">
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>User</th>
+          <th>Service</th>
+          <th>Center</th>
+          <th>Payment</th>
+          <th>Approval</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bookings %}
+          <tr>
+            <td>{{ b.scheduled_for }}</td>
+            <td>{{ b.name }} ({{ b.user.username }})</td>
+            <td class="fw-semibold">{{ b.service_type.name }}</td>
+            <td>{{ b.service_center.name }}</td>
+            <td>
+              <div class="small">{{ b.get_payment_status_display }}</div>
+              {% if b.payment_method %}<div class="text-muted small">{{ b.get_payment_method_display }}</div>{% endif %}
+            </td>
+            <td><span class="badge bg-secondary">{{ b.get_approval_status_display }}</span></td>
+            <td class="text-end">
+              {% if b.payment_status != 'unpaid' and b.approval_status == 'pending' %}
+                <form method="post" action="{% url 'service_center:booking_decide' b.pk %}" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="accept">
+                  <button class="btn btn-sm btn-success" type="submit">Accept</button>
+                </form>
+                <form method="post" action="{% url 'service_center:booking_decide' b.pk %}" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="reject">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Reject</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+

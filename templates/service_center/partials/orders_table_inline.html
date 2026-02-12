@@ -1,0 +1,45 @@
+{% if orders %}
+  <div class="table-responsive">
+    <table class="table table-striped align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>User</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+          <tr>
+            <td>#{{ o.pk }}</td>
+            <td class="fw-semibold">{{ o.user.username }}</td>
+            <td>&#8377;{{ o.total_amount }}</td>
+            <td>
+              <div class="small">{{ o.get_payment_status_display }}</div>
+              {% if o.payment_method %}<div class="text-muted small">{{ o.get_payment_method_display }}</div>{% endif %}
+            </td>
+            <td><span class="badge bg-secondary">{{ o.get_status_display }}</span></td>
+            <td class="text-end">
+              {% if o.status == 'placed' %}
+                <form method="post" action="{% url 'service_center:order_decide' o.pk %}" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="accept">
+                  <button class="btn btn-sm btn-success" type="submit">Accept</button>
+                </form>
+                <form method="post" action="{% url 'service_center:order_decide' o.pk %}" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="reject">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Reject</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+

@@ -1,0 +1,147 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Nearby Locations - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #f3e8ff 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-geo-alt-fill" style="color: var(--primary);"></i> Nearby EV Locations
+                </h1>
+                <p class="text-muted mb-0">Find charging stations and service centers near you on the map</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); overflow: hidden;">
+            <!-- Map Container -->
+            <div id="map" style="height: 70vh; width: 100%; border-radius: 0.75rem;"></div>
+            
+            <!-- Map Status -->
+            <div class="card-footer" style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 1rem;">
+                <p class="mb-0 text-muted small" id="mapStatus">
+                    <i class="bi bi-info-circle"></i> Loading map and nearby locations...
+                </p>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="row mt-5">
+            <div class="col-md-6" data-aos="fade-up">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-body p-4">
+                        <h6 class="mb-3"><i class="bi bi-lightning-fill" style="color: var(--success);"></i> Charging Stations</h6>
+                        <p class="small text-muted mb-0">Green markers show EV charging stations with available slots. Click on any marker to see details and availability.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-body p-4">
+                        <h6 class="mb-3"><i class="bi bi-tools" style="color: var(--primary);"></i> Service Centers</h6>
+                        <p class="small text-muted mb-0">Blue markers show authorized service centers. Click on any marker to view services offered and book an appointment.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Libraries -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    (function(){
+        var statusEl = document.getElementById('mapStatus');
+        function setStatus(msg){ 
+            if(statusEl) {
+                statusEl.innerHTML = '<i class="bi bi-info-circle"></i> ' + (msg || '');
+            }
+        }
+
+        var map = L.map('map', { scrollWheelZoom: true }).setView([20.5937, 78.9629], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var layerStations = L.layerGroup().addTo(map);
+        var layerCenters = L.layerGroup().addTo(map);
+        var layerMe = L.layerGroup().addTo(map);
+        var meLatLng = null;
+
+        function addMeMarker(lat, lng){
+            layerMe.clearLayers();
+            meLatLng = { lat: lat, lng: lng };
+            L.circleMarker([lat, lng], { 
+                radius: 10, 
+                color: '#2563eb', 
+                fillColor: '#2563eb', 
+                fillOpacity: 0.8,
+                weight: 2
+            })
+            .bindPopup('<strong>Your Location</strong>')
+            .addTo(layerMe);
+        }
+
+        function loadNearby(lat, lng){
+            setStatus('Loading nearby locations...');
+            layerStations.clearLayers();
+            layerCenters.clearLayers();
+
+            fetch('{% url "charging:api_stations" %}')
+                .then(r => r.json())
+                .then(data => {
+                    if(data.stations && Array.isArray(data.stations)){
+                        data.stations.forEach(function(s){
+                            var marker = L.circleMarker([s.latitude, s.longitude], {
+                                radius: 12,
+                                color: '#10b981',
+                                fillColor: '#10b981',
+                                fillOpacity: 0.8,
+                                weight: 2
+                            });
+                            marker.bindPopup(
+                                '<strong>' + s.name + '</strong><br>' +
+                                'Available Slots: ' + s.available_slots + '<br>' +
+                                'Plug Types: ' + s.plug_types
+                            );
+                            marker.addTo(layerStations);
+                        });
+                    }
+                    setStatus('Showing ' + (data.stations ? data.stations.length : 0) + ' charging stations. Enable location for better results.');
+                })
+                .catch(e => setStatus('Error loading stations'));
+        }
+
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(
+                function(pos){
+                    var lat = pos.coords.latitude;
+                    var lng = pos.coords.longitude;
+                    addMeMarker(lat, lng);
+                    map.setView([lat, lng], 12);
+                    loadNearby(lat, lng);
+                },
+                function(){
+                    setStatus('Location access denied. Showing all stations.');
+                    loadNearby(20.5937, 78.9629);
+                }
+            );
+        } else {
+            setStatus('Geolocation not supported.');
+            loadNearby(20.5937, 78.9629);
+        }
+    })();
+</script>
+
+{% endblock %}

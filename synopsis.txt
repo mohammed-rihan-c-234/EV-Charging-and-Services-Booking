@@ -1,0 +1,49 @@
+--- Page 1 ---
+Smart EV Assistance and Support System 
+Synopsis 
+The Smart EV Assistance and Support System is designed to improve the safety, 
+convenience, and maintenance experience of Electric Vehicle (EV) users. It integrates 
+features like an SOS button for emergencies, chatbox for real-time support, charging station 
+locator, service center management, spare parts availability, and a reward system for 
+promoting eco-friendly driving habits. 
+ 
+The system helps EV users receive quick roadside assistance, find nearby charging or 
+service centers, order genuine spare parts, and stay motivated through a digital reward 
+mechanism. 
+Modules 
+ User Module – Handles user registration, login, and vehicle information. 
+ SOS Module – Sends emergency alerts with location to nearby service centers or 
+emergency contacts. 
+ Chatbox Module – Provides real-time communication with AI support or service 
+representatives. 
+ Charging Station Module – Displays nearby charging stations with live location and 
+availability. 
+ Service Center Module – Enables booking and tracking of vehicle servicing. 
+ Spare Parts Module – Displays and manages available parts from authorized vendors. 
+ Reward Module – Tracks eco-driving performance and provides redeemable points. 
+ Admin Module – Manages users, services, inventory, and SOS alerts. 
+Hardware Requirements 
+ IoT Device (ESP32 / Raspberry Pi) for SOS integration 
+ GPS Module for live location tracking 
+ GSM Module for communication (optional) 
+ Power Supply Unit 
+ Smartphone or Computer (User Interface Access) 
+Software Requirements 
+ Frontend: HTML, CSS, JavaScript, React 
+ Backend: Node.js / Python (Flask or Django) 
+ Database: MySQL / Firebase 
+ APIs: Google Maps API (for location), Twilio / Firebase (for chat & alerts) 
+ IDE/Tools: VS Code, XAMPP / Postman, GitHub 
+ Operating System: Windows / Linux / Android 
+
+--- Page 2 ---
+Expected Outcome 
+The system provides: 
+• Instant emergency response through SOS alerts. 
+• Seamless communication via chatbox support. 
+• Quick access to charging and service centers. 
+• Transparent spare parts tracking and maintenance. 
+• Motivation through rewards, encouraging efficient driving habits. 
+ 
+This project promotes smart, safe, and sustainable EV usage by combining technology, 
+safety, and user engagement in a single platform. 

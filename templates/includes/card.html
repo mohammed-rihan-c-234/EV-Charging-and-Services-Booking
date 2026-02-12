@@ -1,0 +1,21 @@
+<!-- Card Component -->
+<div class="col-{{ col_class|default:"12" }}" data-aos="{{ animation|default:"fade-up" }}" data-aos-delay="{{ delay|default:"0" }}">
+    <div class="card h-100">
+        {% if card_header %}
+        <div class="card-header">
+            {{ card_header }}
+        </div>
+        {% endif %}
+        <div class="card-body">
+            {% if card_title %}
+            <h5 class="card-title">{{ card_title }}</h5>
+            {% endif %}
+            {{ card_content|safe }}
+        </div>
+        {% if card_footer %}
+        <div class="card-footer bg-light">
+            {{ card_footer|safe }}
+        </div>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,62 @@
+/* Order Card Status Styles */
+.order-card {
+    border-left: 4px solid #6b7280;
+}
+
+.order-card-placed {
+    border-left: 4px solid #fbbf24;
+}
+
+.order-card-accepted {
+    border-left: 4px solid #10b981;
+}
+
+.order-card-rejected {
+    border-left: 4px solid #ef4444;
+}
+
+/* Status Badge Styles */
+.badge-status {
+    color: white;
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.badge-status-placed {
+    background-color: #fbbf24;
+}
+
+.badge-status-accepted {
+    background-color: #10b981;
+}
+
+.badge-status-rejected {
+    background-color: #ef4444;
+}
+
+.badge-status-default {
+    background-color: #6b7280;
+}
+
+/* Payment Status Badge Styles */
+.badge-payment {
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.badge-payment-paid {
+    background-color: #10b981;
+}
+
+.badge-payment-pending_cash {
+    background-color: #f59e0b;
+}
+
+.badge-payment-pending {
+    background-color: #f59e0b;
+}
+
+.badge-payment-default {
+    background-color: #ef4444;
+}

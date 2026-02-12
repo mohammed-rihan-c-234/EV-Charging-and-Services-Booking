@@ -1,0 +1,156 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Spare Parts - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #f3e8ff 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-box-seam" style="color: var(--primary);"></i> Genuine Spare Parts
+                </h1>
+                <p class="text-muted mb-0">High-quality components for your EV</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filters & Search -->
+<section class="section-padding" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row g-3 align-items-end" data-aos="fade-up">
+            <div class="col-md-6">
+                <label class="form-label">Search Parts</label>
+                <input type="text" class="form-control" placeholder="Search by part name...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Category</label>
+                <select class="form-select">
+                    <option>All Categories</option>
+                    <option>Battery</option>
+                    <option>Motor</option>
+                    <option>Brakes</option>
+                    <option>Suspension</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Price Range</label>
+                <select class="form-select">
+                    <option>All Prices</option>
+                    <option>Under $50</option>
+                    <option>$50 - $100</option>
+                    <option>$100 - $500</option>
+                    <option>Above $500</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Parts Grid -->
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="row g-4">
+            {% for part in parts %}
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="card h-100 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); transition: all 0.3s ease;">
+                        <!-- Part Image -->
+                        <div style="background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 100%); height: 250px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+                            {% if part.image_url %}
+                                <img src="{{ part.image_url }}" alt="{{ part.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                <div style="font-size: 4rem; color: var(--primary); opacity: 0.5;">
+                                    <i class="bi bi-box-seam"></i>
+                                </div>
+                            {% endif %}
+                            <div style="position: absolute; top: 1rem; right: 1rem;">
+                                <span class="badge" style="background: var(--success); color: white;">In Stock</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <h6 class="card-title" style="color: var(--primary);">{{ part.category }}</h6>
+                            <h5 class="mb-2">{{ part.name }}</h5>
+                            <p class="card-text text-muted small mb-3">{{ part.description }}</p>
+
+                            <!-- Price -->
+                            <div class="d-flex justify-content-between align-items-end mb-3">
+                                <div>
+                                    <span style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">${{ part.price }}</span>
+                                    <small class="text-muted text-decoration-line-through ms-2">${{ part.mrp }}</small>
+                                </div>
+                                <span class="badge" style="background: var(--success); color: white;">{{ part.discount }}% OFF</span>
+                            </div>
+
+                            <!-- Features -->
+                            <ul class="small text-muted mb-3">
+                                <li>Genuine OEM part</li>
+                                <li>2 Year warranty</li>
+                                <li>Free shipping</li>
+                            </ul>
+
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'part-detail' part.id %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="bi bi-cart-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <div style="font-size: 3rem; color: #e5e7eb; margin-bottom: 1rem;">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <h5>No parts found</h5>
+                        <p class="text-muted">We'll have more genuine parts in stock soon!</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="section-padding" style="background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 100%); border-top: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <h2 class="text-center mb-5" data-aos="fade-up">Why Buy from Us?</h2>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 2rem;">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h6>100% Genuine</h6>
+                    <p class="small text-muted">Authentic OEM parts directly from manufacturers</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 2rem;">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <h6>Fast Delivery</h6>
+                    <p class="small text-muted">Same-day delivery available in major cities</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 2rem;">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h6>Warranty Support</h6>
+                    <p class="small text-muted">2-year warranty and 30-day return policy</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

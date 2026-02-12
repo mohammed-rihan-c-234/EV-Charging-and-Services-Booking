@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+  {% load nav_tags static %}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EV Service</title>
+  <!-- Bootstrap 5 CSS (no SRI attribute so CDN loads reliably in development) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Font: Inter for clean UI -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+      /* Design tokens */
+      :root{
+        --primary: #0d6efd; /* bootstrap primary */
+        --accent: #6f42c1; /* purple accent */
+        --muted: #6c757d;
+        --bg-start: #e6f7ff;
+        --bg-mid: #f3e8ff;
+        --bg-end: #ffe9e0;
+      }
+
+      /* Dark theme variables - applied when html[data-theme="dark"] is set */
+      html[data-theme="dark"]{
+        --bg-start: #0f1724;
+        --bg-mid: #142033;
+        --bg-end: #1b2430;
+        --primary: #60a5fa;
+        --accent: #a78bfa;
+        --muted: #9aa4b2;
+      }
+
+      /* small custom tweaks and gradient background */
+      html, body { height: 100%; }
+        body {
+          padding-top: 70px;
+          font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+          line-height: 1.5;
+          color: #222;
+        /* Use a background image from static if present, with the gradient as a fallback.
+          Try both 'ev_bg.jpg' and 'ev_bg.jpg.jpg' (sometimes image was uploaded with double extension). */
+        background-image: url("{% static 'images/ev_bg.jpg' %}"), url("{% static 'images/ev_bg.jpg.jpg' %}"), linear-gradient(135deg, var(--bg-start) 0%, var(--bg-mid) 50%, var(--bg-end) 100%);
+          background-size: cover, cover;
+          background-position: center center, center center;
+          background-repeat: no-repeat, no-repeat;
+          background-attachment: fixed, fixed;
+      }
+
+      /* Container for page content: narrower, centered and frosted so background shows through */
+      .container{
+        max-width: 1100px;
+        /* translucent white so the background image peeks through */
+        background-color: rgba(255,255,255,0.80);
+        padding: 2rem;
+        margin-top: 1rem;
+        border-radius: 0.6rem;
+        box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+        border: 1px solid rgba(13,110,253,0.06);
+        backdrop-filter: blur(6px) saturate(120%);
+      }
+
+      /* Dark theme container and text overrides */
+      html[data-theme="dark"] body{
+        color: #e6eef8;
+        background-color: var(--bg-start);
+      }
+      /* Ensure links, headings and smaller text are readable in dark mode */
+      html[data-theme="dark"] a{ color: #9ad7ff; }
+      html[data-theme="dark"] h1,
+      html[data-theme="dark"] h2,
+      html[data-theme="dark"] h3,
+      html[data-theme="dark"] h4,
+      html[data-theme="dark"] h5,
+      html[data-theme="dark"] h6,
+      html[data-theme="dark"] .card .card-title{
+        color: #ffffff;
+      }
+      html[data-theme="dark"] .text-muted{ color: rgba(230,238,248,0.6) !important; }
+      html[data-theme="dark"] footer p{ color: rgba(230,238,248,0.6); }
+      html[data-theme="dark"] .container{
+        background-color: rgba(9,12,20,0.52);
+        box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+        color: #e6eef8;
+        border: 1px solid rgba(255,255,255,0.04);
+        backdrop-filter: blur(6px) saturate(120%);
+      }
+      /* Make card body text bright enough */
+      html[data-theme="dark"] .card, html[data-theme="dark"] .card-body{ color: #e6eef8; }
+      /* Buttons: ensure primary buttons remain legible */
+      html[data-theme="dark"] .btn-primary{ background-color: var(--primary); border-color: var(--primary); color: #fff; }
+
+      /* Navbar tweaks: frosted translucent header that blends with background;
+         ensure navbar fonts/icons remain white for readability */
+      .navbar{
+        background-color: rgba(2,6,23,0.55) !important;
+        backdrop-filter: blur(8px) saturate(120%);
+        -webkit-backdrop-filter: blur(8px) saturate(120%);
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+      }
+      .navbar-brand{ font-weight:700; letter-spacing:0.2px; color: #fff !important; }
+      .navbar-nav .nav-link{ color: #fff !important; font-weight:500; }
+      .navbar .navbar-toggler-icon{ filter: invert(1) grayscale(1) contrast(120%); }
+      /* Active pill style: white background, primary text */
+      .nav-pills .nav-link.active{
+        /* active pill: subtle light backing but keep text white for contrast */
+        background-color: rgba(255,255,255,0.12) !important;
+        color: #fff !important;
+        border-radius: 999px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+      }
+
+      /* Dark navbar tweaks */
+      html[data-theme="dark"] .navbar{ background-color: rgba(8,14,20,0.6) !important; border-bottom: 1px solid rgba(255,255,255,0.03); }
+
+      /* Dark theme adjustments */
+      html[data-theme="dark"] .navbar-nav .nav-link{ color: rgba(255,255,255,0.9); }
+      html[data-theme="dark"] .nav-pills .nav-link.active{
+        background-color: rgba(255,255,255,0.06) !important;
+        color: var(--primary) !important;
+        box-shadow: none;
+      }
+
+      /* Card spacing */
+  .card{ margin-bottom: 1rem; border: none; background-color: rgba(255,255,255,0.92); }
+      .card .card-title{ font-weight:600; }
+
+  /* Dark cards */
+  html[data-theme="dark"] .card{ background-color: rgba(255,255,255,0.03); }
+
+      /* Links and small text */
+      a{ color: var(--accent); }
+      a.btn-primary{ background-color: var(--primary); border-color: var(--primary); }
+      footer p{ margin:0; }
+      /* Icon spacing */
+      .nav-link .bi{ vertical-align: -0.125em; margin-right: .35rem; }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+      <div class="container-fluid position-relative">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Centered brand -->
+        <a class="navbar-brand mx-auto" href="/">EV Service</a>
+
+        <!-- Right-side nav items shown as pills/tabs -->
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav nav-pills">
+            {% is_service_center as is_sc %}
+            {% if not is_sc %}
+              <li class="nav-item"><a class="nav-link {% active_nav '/vehicles/' %}" href="/vehicles/"><i class="bi bi-car-front-fill"></i>Vehicles</a></li>
+              <li class="nav-item"><a class="nav-link {% active_nav '/sos/' %}" href="/sos/"><i class="bi bi-exclamation-triangle-fill"></i>SOS</a></li>
+              <li class="nav-item"><a class="nav-link {% active_nav '/chat/' %}" href="/chat/"><i class="bi bi-chat-dots-fill"></i>Chat</a></li>
+              <li class="nav-item"><a class="nav-link {% active_nav '/charging/' %}" href="/charging/"><i class="bi bi-plug-fill"></i>Charging</a></li>
+              <li class="nav-item"><a class="nav-link {% active_nav '/service-centers/' %}" href="/service-centers/"><i class="bi bi-building"></i>Service Centers</a></li>
+              <li class="nav-item"><a class="nav-link {% active_nav '/map/' %}" href="/map/"><i class="bi bi-geo-alt-fill"></i>Map</a></li>
+              <li class="nav-item"><a class="nav-link {% active_nav '/parts/' %}" href="/parts/"><i class="bi bi-box-seam"></i>Spare Parts</a></li>
+              <li class="nav-item"><a class="nav-link {% active_nav '/rewards/' %}" href="/rewards/"><i class="bi bi-gift"></i>Rewards</a></li>
+              {% if user.is_staff %}
+                <li class="nav-item"><a class="nav-link {% active_nav '/admin/' %}" href="/admin/"><i class="bi bi-shield-lock"></i>Admin</a></li>
+              {% endif %}
+            {% endif %}
+
+            {% if user.is_authenticated %}
+              {% if is_sc %}
+                <li class="nav-item"><a class="nav-link {% active_nav '/service-centers/dashboard/' %}" href="/service-centers/dashboard/"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
+              {% else %}
+                <li class="nav-item"><a class="nav-link {% active_nav '/vehicles/mine/' %}" href="/vehicles/mine/"><i class="bi bi-person-badge"></i>My Vehicles</a></li>
+                <li class="nav-item"><a class="nav-link {% active_nav '/bookings/mine/' %}" href="/bookings/mine/"><i class="bi bi-calendar-check"></i>My Bookings</a></li>
+                <li class="nav-item"><a class="nav-link {% active_nav '/charging/bookings/' %}" href="/charging/bookings/mine/"><i class="bi bi-plug-fill"></i>My Charging</a></li>
+                <li class="nav-item"><a class="nav-link {% active_nav '/bookings/new/' %}" href="/bookings/new/"><i class="bi bi-calendar-plus"></i>Schedule</a></li>
+                <li class="nav-item"><a class="nav-link {% active_nav '/parts/cart/' %}" href="/parts/cart/"><i class="bi bi-cart"></i>Cart</a></li>
+              {% endif %}
+              <li class="nav-item">
+                <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="nav-link bg-transparent border-0">
+                    <i class="bi bi-box-arrow-right"></i>Logout
+                  </button>
+                </form>
+              </li>
+            {% else %}
+              <li class="nav-item"><a class="nav-link {% active_nav '/login/' %}" href="{% url 'accounts:login' %}"><i class="bi bi-box-arrow-in-right"></i>Login</a></li>
+              <li class="nav-item"><a class="nav-link {% active_nav '/signup/' %}" href="{% url 'accounts:signup' %}"><i class="bi bi-person-plus-fill"></i>Sign Up</a></li>
+            {% endif %}
+
+            <!-- Theme toggle as a nav item so it stays on the right side with the other links -->
+            <li class="nav-item">
+              <a id="themeToggle" class="nav-link" role="button" href="#" aria-label="Toggle theme"><i id="themeIcon" class="bi bi-moon-fill"></i></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }} mt-2" role="alert">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+      {% block content %}{% endblock %}
+      <footer class="mt-5">
+        <hr>
+        <p class="text-muted small">Simple EV Service demo app — meant for learning and prototyping.</p>
+      </footer>
+    </main>
+
+  <!-- Bootstrap JS (with Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Theme toggle: persists selection in localStorage and toggles html[data-theme]
+    (function(){
+      function setTheme(theme){
+        if(theme === 'dark'){
+          document.documentElement.setAttribute('data-theme','dark');
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+        }
+        // update icon
+        var icon = document.getElementById('themeIcon');
+        if(icon){
+          icon.className = (theme === 'dark') ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+        }
+        try{ localStorage.setItem('theme', theme); }catch(e){/* ignore */}
+      }
+
+      document.addEventListener('DOMContentLoaded', function(){
+        var saved = null;
+        try{ saved = localStorage.getItem('theme'); }catch(e){ saved = null; }
+        if(saved === null) saved = 'light';
+        setTheme(saved);
+
+        var toggle = document.getElementById('themeToggle');
+        if(toggle){
+          toggle.addEventListener('click', function(ev){
+            ev.preventDefault();
+            var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+            var next = current === 'dark' ? 'light' : 'dark';
+            setTheme(next);
+          });
+        }
+      });
+    })();
+    // Generic form "Clear" button handler: clears input fields within the same form.
+    (function(){
+      function clearFormFields(form){
+        if(!form) return;
+        var elements = form.querySelectorAll('input, textarea, select');
+        elements.forEach(function(el){
+          var type = (el.type || '').toLowerCase();
+          if(type === 'hidden' || el.dataset.preserve === 'true') return; // skip hidden and preserved fields
+          if(type === 'checkbox' || type === 'radio'){
+            el.checked = false;
+          } else if(type === 'select-one' || type === 'select-multiple'){
+            el.selectedIndex = -1;
+          } else if(type === 'file'){
+            try{ el.value = null; }catch(e){}
+          } else {
+            el.value = '';
+          }
+        });
+      }
+
+      document.addEventListener('click', function(ev){
+        var btn = ev.target.closest && ev.target.closest('.btn-clear');
+        if(!btn) return;
+        ev.preventDefault();
+        var form = btn.closest('form');
+        var confirmAttr = btn.getAttribute('data-confirm');
+        var doConfirm = confirmAttr !== 'false';
+        if(doConfirm){
+          var ok = confirm('Clear all fields in this form? This cannot be undone.');
+          if(!ok) return;
+        }
+        clearFormFields(form);
+      });
+    })();
+  </script>
+  </body>
+</html>

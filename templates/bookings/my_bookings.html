@@ -1,0 +1,116 @@
+{% extends 'base_new.html' %}
+
+{% block title %}My Service Bookings - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center justify-content-between">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-calendar-check" style="color: var(--primary);"></i> My Service Bookings
+                </h1>
+                <p class="text-muted mb-0">Track your scheduled services and bookings</p>
+            </div>
+            <div class="col-auto" data-aos="fade-left">
+                <a href="{% url 'bookings:booking_create' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-calendar-plus"></i> Schedule Service
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bookings List -->
+<section class="section-padding">
+    <div class="container-lg">
+        {% if bookings %}
+            <div class="row g-4">
+                {% for booking in bookings %}
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                        <div class="card h-100 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border-left: 4px solid var(--primary);">
+                            <div class="card-body">
+                                <!-- Status Badge -->
+                                <div class="mb-3 d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="text-muted small mb-1">{{ booking.service_type.name }}</h6>
+                                        <h5>{{ booking.name }}</h5>
+                                    </div>
+                                    <span class="badge" style="background: {% if booking.status == 'confirmed' %}var(--success){% elif booking.status == 'pending' %}var(--warning){% else %}var(--danger){% endif %}; color: white;">
+                                        {{ booking.get_status_display }}
+                                    </span>
+                                </div>
+
+                                <!-- Details -->
+                                <div class="mb-3 space-y-2">
+                                    <div class="d-flex align-items-center text-muted small mb-2">
+                                        <i class="bi bi-calendar-event" style="color: var(--primary); margin-right: 0.5rem;"></i>
+                                        {{ booking.scheduled_for|date:"M d, Y - h:i A" }}
+                                    </div>
+                                    <div class="d-flex align-items-center text-muted small mb-2">
+                                        <i class="bi bi-geo-alt-fill" style="color: var(--primary); margin-right: 0.5rem;"></i>
+                                        {{ booking.service_center.name }}
+                                    </div>
+                                    <div class="d-flex align-items-center text-muted small">
+                                        <i class="bi bi-telephone-fill" style="color: var(--primary); margin-right: 0.5rem;"></i>
+                                        {{ booking.phone_number }}
+                                    </div>
+                                </div>
+
+                                <!-- Payment & Approval Status -->
+                                <div class="p-2 mb-3" style="background: #f8fafc; border-radius: 0.5rem;">
+                                    <div class="d-flex justify-content-between text-muted small mb-1">
+                                        <span>Payment:</span>
+                                        <span>
+                                            <span class="badge" style="background: {% if booking.payment_status == 'paid' %}var(--success){% else %}var(--warning){% endif %}; color: white; font-size: 0.75rem;">
+                                                {{ booking.get_payment_status_display }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between text-muted small">
+                                        <span>Approval:</span>
+                                        <span>
+                                            <span class="badge" style="background: {% if booking.approval_status == 'approved' %}var(--success){% elif booking.approval_status == 'pending' %}var(--warning){% else %}var(--danger){% endif %}; color: white; font-size: 0.75rem;">
+                                                {{ booking.get_approval_status_display }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Action Button -->
+                                <div class="d-grid">
+                                    {% if booking.payment_status == 'unpaid' %}
+                                        <a href="{% url 'bookings:checkout' booking.pk %}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-credit-card"></i> Complete Payment
+                                        </a>
+                                    {% else %}
+                                        <a href="#" class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-eye"></i> View Details
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="text-center py-5">
+                        <div style="font-size: 4rem; color: #cbd5e1; margin-bottom: 1rem;">
+                            <i class="bi bi-calendar-x"></i>
+                        </div>
+                        <h3 class="text-muted mb-3">No Bookings Yet</h3>
+                        <p class="text-muted mb-4">Schedule your first service booking to maintain your electric vehicle</p>
+                        <a href="{% url 'bookings:booking_create' %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-calendar-plus"></i> Schedule Service
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

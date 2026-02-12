@@ -1,0 +1,120 @@
+{% extends 'base_new.html' %}
+
+{% block title %}{{ vehicle.make }} {{ vehicle.model }} - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-car-front-fill" style="color: var(--primary);"></i> Vehicle Details
+                </h1>
+                <p class="text-muted mb-0">Complete information about your EV</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Vehicle Details -->
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="row justify-content-center" data-aos="fade-up">
+            <div class="col-lg-6">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div style="background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 100%); padding: 3rem; text-align: center;">
+                        <div style="font-size: 4rem; color: var(--primary); margin-bottom: 1rem;">
+                            <i class="bi bi-car-front"></i>
+                        </div>
+                        <h2>{{ vehicle.make }} {{ vehicle.model }}</h2>
+                        <p class="text-muted">{{ vehicle.year }} • EV</p>
+                    </div>
+
+                    <div class="card-body p-5">
+                        <h5 class="mb-4">Vehicle Information</h5>
+                        
+                        <!-- Owner -->
+                        <div class="mb-4 pb-4 border-bottom">
+                            <label class="form-label text-muted small"><i class="bi bi-person-fill"></i> Owner Name</label>
+                            <p class="mb-0 h6">{{ vehicle.owner_name }}</p>
+                        </div>
+
+                        <!-- Make & Model -->
+                        <div class="mb-4 pb-4 border-bottom">
+                            <label class="form-label text-muted small"><i class="bi bi-car-front"></i> Make & Model</label>
+                            <p class="mb-0 h6">{{ vehicle.make }} {{ vehicle.model }}</p>
+                        </div>
+
+                        <!-- Year -->
+                        <div class="mb-4 pb-4 border-bottom">
+                            <label class="form-label text-muted small"><i class="bi bi-calendar3"></i> Manufacturing Year</label>
+                            <p class="mb-0 h6">{{ vehicle.year }}</p>
+                        </div>
+
+                        <!-- License Plate -->
+                        <div class="mb-4 pb-4 border-bottom">
+                            <label class="form-label text-muted small"><i class="bi bi-credit-card"></i> License Plate</label>
+                            <p class="mb-0 h6" style="font-family: monospace; color: var(--primary); font-size: 1.25rem; font-weight: bold;">{{ vehicle.license_plate }}</p>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="d-grid gap-2">
+                            <a href="/vehicles/" class="btn btn-primary">
+                                <i class="bi bi-arrow-left"></i> Back to Vehicles
+                            </a>
+                            <a href="#" class="btn btn-outline-primary">
+                                <i class="bi bi-pencil"></i> Edit Vehicle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions -->
+<section class="section-padding" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <h2 class="mb-4 text-center" data-aos="fade-up">Quick Actions</h2>
+        <div class="row g-3 justify-content-center">
+            <div class="col-md-3 col-sm-6" data-aos="fade-up" data-aos-delay="100">
+                <a href="/services/" class="text-decoration-none">
+                    <div class="card h-100 text-center p-4 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); transition: all 0.3s ease;">
+                        <div style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <h6>Schedule Service</h6>
+                        <p class="small text-muted mb-0">Book maintenance</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6" data-aos="fade-up" data-aos-delay="200">
+                <a href="/charging/" class="text-decoration-none">
+                    <div class="card h-100 text-center p-4 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); transition: all 0.3s ease;">
+                        <div style="font-size: 2rem; color: var(--success); margin-bottom: 0.5rem;">
+                            <i class="bi bi-lightning-charge"></i>
+                        </div>
+                        <h6>Find Charging</h6>
+                        <p class="small text-muted mb-0">Nearby stations</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-sm-6" data-aos="fade-up" data-aos-delay="300">
+                <a href="/spareparts/" class="text-decoration-none">
+                    <div class="card h-100 text-center p-4 border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); transition: all 0.3s ease;">
+                        <div style="font-size: 2rem; color: var(--info); margin-bottom: 0.5rem;">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <h6>Spare Parts</h6>
+                        <p class="small text-muted mb-0">Browse parts</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

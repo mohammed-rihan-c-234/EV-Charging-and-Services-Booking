@@ -1,0 +1,162 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Book a Service - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fef3c7 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-calendar-event" style="color: var(--primary);"></i> Schedule Service
+                </h1>
+                <p class="text-muted mb-0">Book a professional service for your EV</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Form -->
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="fade-up">
+                <div class="card border-0" style="box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);">
+                    <div class="card-body p-5">
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger d-flex align-items-center mb-4" style="border-left: 5px solid var(--danger);">
+                                <i class="bi bi-exclamation-circle-fill me-3" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <strong>Please correct the following errors:</strong>
+                                    <ul class="mb-0 mt-2">
+                                        {% for field, errors in form.errors.items %}
+                                            {% for error in errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+
+                            <!-- Personal Information -->
+                            <div class="mb-4">
+                                <h6 class="mb-3"><i class="bi bi-person-fill" style="color: var(--primary);"></i> Personal Information</h6>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">{{ form.name.label }} <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                <i class="bi bi-person"></i>
+                                            </span>
+                                            {{ form.name }}
+                                        </div>
+                                        {% if form.name.errors %}<div class="invalid-feedback d-block">{{ form.name.errors|striptags }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">{{ form.phone_number.label }} <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                <i class="bi bi-telephone"></i>
+                                            </span>
+                                            {{ form.phone_number }}
+                                        </div>
+                                        {% if form.phone_number.errors %}<div class="invalid-feedback d-block">{{ form.phone_number.errors|striptags }}</div>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="border-color: #e2e8f0;">
+
+                            <!-- Service Selection -->
+                            <div class="mb-4">
+                                <h6 class="mb-3"><i class="bi bi-tools" style="color: var(--secondary);"></i> Service Details</h6>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">{{ form.service_type.label }} <span class="text-danger">*</span></label>
+                                        {{ form.service_type }}
+                                        {% if form.service_type.errors %}<div class="invalid-feedback d-block">{{ form.service_type.errors|striptags }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">{{ form.service_center.label }} <span class="text-danger">*</span></label>
+                                        {{ form.service_center }}
+                                        {% if form.service_center.errors %}<div class="invalid-feedback d-block">{{ form.service_center.errors|striptags }}</div>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="border-color: #e2e8f0;">
+
+                            <!-- Scheduling -->
+                            <div class="mb-4">
+                                <h6 class="mb-3"><i class="bi bi-clock" style="color: var(--success);"></i> Schedule</h6>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.scheduled_for.label }} <span class="text-danger">*</span></label>
+                                    {{ form.scheduled_for }}
+                                    {% if form.scheduled_for.help_text %}<small class="form-text text-muted d-block mt-2">{{ form.scheduled_for.help_text }}</small>{% endif %}
+                                    {% if form.scheduled_for.errors %}<div class="invalid-feedback d-block">{{ form.scheduled_for.errors|striptags }}</div>{% endif %}
+                                </div>
+                            </div>
+
+                            <hr style="border-color: #e2e8f0;">
+
+                            <!-- Additional Notes -->
+                            <div class="mb-4">
+                                <h6 class="mb-3"><i class="bi bi-chat-left-text" style="color: var(--info);"></i> Additional Details</h6>
+                                
+                                <label class="form-label">{{ form.notes.label }}</label>
+                                {{ form.notes }}
+                                <small class="form-text text-muted d-block mt-2">Provide any additional information about your service request (optional)</small>
+                                {% if form.notes.errors %}<div class="invalid-feedback d-block">{{ form.notes.errors|striptags }}</div>{% endif %}
+                            </div>
+
+                            <!-- Styling for form controls -->
+                            <style>
+                                .form-control, .form-select {
+                                    border: 1px solid #e2e8f0;
+                                    border-radius: 0.5rem;
+                                    padding: 0.75rem 1rem;
+                                    font-size: 0.95rem;
+                                    transition: all 0.3s ease;
+                                }
+                                .form-control:focus, .form-select:focus {
+                                    border-color: var(--primary);
+                                    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+                                }
+                                .form-control.is-invalid, .form-select.is-invalid {
+                                    border-color: var(--danger);
+                                }
+                                textarea.form-control {
+                                    resize: vertical;
+                                    min-height: 120px;
+                                }
+                            </style>
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-3 mt-5">
+                                <button class="btn btn-lg" type="submit" style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); color: white; border: none; font-weight: 600;">
+                                    <i class="bi bi-check-circle"></i> Review & Proceed to Payment
+                                </button>
+                                <a class="btn btn-outline-secondary btn-lg" href="{% url 'bookings:my_bookings' %}">
+                                    <i class="bi bi-arrow-left"></i> View My Bookings
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

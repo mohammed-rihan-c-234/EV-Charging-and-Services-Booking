@@ -1,0 +1,125 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Login - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<section class="section-padding" style="background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 50%, #fce7f3 100%);">
+    <div class="container-lg">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-5" data-aos="fade-up">
+                <!-- Login Card -->
+                <div class="card border-0" style="box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);">
+                    <div class="card-body p-5">
+                        <!-- Header -->
+                        <div class="text-center mb-4">
+                            <div style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                                <i class="bi bi-lightning-charge" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h2 class="mb-2">Welcome Back</h2>
+                            <p class="text-muted">Sign in to access your EV services</p>
+                        </div>
+
+                        <!-- Error Messages -->
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <div style="margin-left: 0.5rem; display: inline;">
+                                    {{ form.non_field_errors }}
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endif %}
+
+                        <!-- Login Form -->
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+
+                            <!-- Username Field -->
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ form.username.id_for_label }}">
+                                    <i class="bi bi-person"></i> Username <span class="text-danger">*</span>
+                                </label>
+                                <input
+                                    class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                                    id="{{ form.username.id_for_label }}"
+                                    name="{{ form.username.html_name }}"
+                                    type="text"
+                                    value="{{ form.username.value|default:'' }}"
+                                    autocomplete="username"
+                                    placeholder="Enter your username"
+                                    required
+                                >
+                                {% if form.username.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        {{ form.username.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Password Field -->
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ form.password.id_for_label }}">
+                                    <i class="bi bi-key"></i> Password <span class="text-danger">*</span>
+                                </label>
+                                <input
+                                    class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                                    id="{{ form.password.id_for_label }}"
+                                    name="{{ form.password.html_name }}"
+                                    type="password"
+                                    autocomplete="current-password"
+                                    placeholder="Enter your password"
+                                    required
+                                >
+                                {% if form.password.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        {{ form.password.errors|striptags }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            {% if next %}
+                                <input type="hidden" name="next" value="{{ next }}">
+                            {% endif %}
+
+                            <!-- Submit Button -->
+                            <button class="btn btn-primary btn-lg w-100 mb-3" type="submit">
+                                <i class="bi bi-box-arrow-in-right"></i> Sign In
+                            </button>
+                        </form>
+
+                        <!-- Divider -->
+                        <div style="display: flex; align-items: center; margin: 1.5rem 0;">
+                            <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                            <div style="padding: 0 1rem; color: #94a3b8; font-size: 0.875rem;">OR</div>
+                            <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                        </div>
+
+                        <!-- Sign Up Link -->
+                        <a class="btn btn-outline-primary btn-lg w-100 mb-3" href="{% url 'accounts:signup' %}">
+                            <i class="bi bi-person-plus"></i> Create an Account
+                        </a>
+
+                        <!-- Footer Link -->
+                        <p class="text-muted small text-center mb-0 mt-3">
+                            💡 Tip: Staff members can also log in via <a href="/admin/" class="text-primary">Admin Panel</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Security Info -->
+                <div class="mt-4 p-3 bg-white rounded-3" style="border: 1px solid #e2e8f0; text-align: center;">
+                    <p class="small text-muted mb-0">
+                        <i class="bi bi-shield-check" style="color: var(--success);"></i>
+                        Your login is secure and encrypted
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

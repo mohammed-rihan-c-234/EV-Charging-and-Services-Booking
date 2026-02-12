@@ -1,0 +1,118 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Services - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center justify-content-between">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-tools" style="color: var(--primary);"></i> Service Types
+                </h1>
+                <p class="text-muted mb-0">Professional EV maintenance and repair services</p>
+            </div>
+            <div class="col-auto" data-aos="fade-left">
+                <a href="{% url 'sos:submit' %}" class="btn btn-danger">
+                    <i class="bi bi-telephone-outbound"></i> Emergency SOS
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services List -->
+<section class="section-padding">
+    <div class="container-lg">
+        {% if services %}
+            <div class="row g-4">
+                {% for service in services %}
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                        <div class="card h-100 service-card">
+                            <div class="card-body text-center">
+                                <div class="service-card-icon" style="background: var(--gradient-primary); color: white;">
+                                    <i class="bi bi-wrench"></i>
+                                </div>
+                                <h5 class="card-title">{{ service.name }}</h5>
+                                <p class="card-text text-muted small">
+                                    {{ service.description|default:"Professional service" }}
+                                </p>
+                                <div class="mt-4">
+                                    <p class="text-muted small mb-2">Starting Price</p>
+                                    <h4 class="text-primary">₹{{ service.base_price }}</h4>
+                                </div>
+                                <a href="{% url 'bookings:booking_create' %}" class="btn btn-primary btn-sm w-100 mt-3">
+                                    <i class="bi bi-calendar-event"></i> Book Service
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <div style="font-size: 4rem; color: #cbd5e1; margin-bottom: 1rem;">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h3 class="text-muted mb-3">No Services Available</h3>
+                <p class="text-muted mb-4">Services are being added. Check back soon!</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Service Benefits -->
+<section class="section-padding" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <h2 class="text-center mb-5" data-aos="fade-up">Why Choose Our Services?</h2>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                        <i class="bi bi-check-circle-fill" style="font-size: 2rem;"></i>
+                    </div>
+                    <h6>Expert Technicians</h6>
+                    <p class="small text-muted">Trained and certified EV specialists</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                        <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
+                    </div>
+                    <h6>Fast Service</h6>
+                    <p class="small text-muted">Quick turnaround times guaranteed</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-center">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                        <i class="bi bi-shield-check" style="font-size: 2rem;"></i>
+                    </div>
+                    <h6>Warranty Coverage</h6>
+                    <p class="small text-muted">Warranty on all repairs and parts</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center" data-aos="fade-up">
+                <h2 class="mb-4">Ready to Service Your EV?</h2>
+                <p class="lead text-muted mb-4">Book an appointment with our certified service centers.</p>
+                <a href="/service-centers/" class="btn btn-primary btn-lg">
+                    <i class="bi bi-calendar-event"></i> Find Service Centers
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

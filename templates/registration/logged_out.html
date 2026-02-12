@@ -1,0 +1,39 @@
+{% extends 'base_new.html' %}
+
+{% block title %}Logged Out - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Success Message Section -->
+<section style="min-height: 70vh; display: flex; align-items: center; background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fef3c7 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6" data-aos="zoom-in">
+                <div class="card border-0 text-center" style="box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);">
+                    <div class="card-body p-5">
+                        <!-- Success Icon -->
+                        <div style="font-size: 4rem; color: var(--success); margin-bottom: 1.5rem;">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        
+                        <!-- Message -->
+                        <h3 class="mb-2">Successfully Logged Out</h3>
+                        <p class="text-muted mb-4">You have been safely logged out. Thank you for using EV Service Platform!</p>
+                        
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+                                <i class="bi bi-house"></i> Return to Home
+                            </a>
+                            <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i> Sign In Again
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

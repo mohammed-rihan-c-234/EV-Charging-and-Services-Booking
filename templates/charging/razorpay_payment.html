@@ -1,0 +1,148 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Razorpay Payment - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<section class="section-padding" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #fce7f3 100%);">
+    <div class="container-lg">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6" data-aos="fade-up">
+                <div class="card border-0" style="box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div style="width: 80px; height: 80px; background: var(--gradient-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white;">
+                                <i class="bi bi-credit-card-2-front" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <h2 class="mb-2">Charging Payment</h2>
+                            <p class="text-muted">Complete your charging booking payment securely</p>
+                        </div>
+
+                        <div class="p-4 mb-4" style="background: #f8fafc; border-radius: 0.75rem;">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Booking ID</span>
+                                <strong>#{{ booking.id }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Station</span>
+                                <strong>{{ booking.station.name }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Amount</span>
+                                <strong style="color: var(--success);">&#8377;{{ amount_display }}</strong>
+                            </div>
+                        </div>
+
+                        {% if available_points > 0 %}
+                        <div class="p-4 mb-4" style="background: #f0fdf4; border-radius: 0.75rem;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">Available Reward Points</span>
+                                <strong>{{ available_points }}</strong>
+                            </div>
+                            {% if booking.points_redeemed > 0 %}
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-muted">Applied Points</span>
+                                    <strong>-{{ booking.points_redeemed }}</strong>
+                                </div>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-danger w-100" type="submit" name="remove_points">
+                                        <i class="bi bi-x-circle"></i> Remove Points
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="input-group">
+                                        <input type="number" min="0" name="points_to_use" class="form-control" placeholder="Points to use">
+                                        <button class="btn btn-outline-success" type="submit" name="apply_points">Apply</button>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">50 points = &#8377;5 discount</small>
+                                </form>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <form id="razorpayVerifyForm" method="post" action="{% url 'charging:razorpay_verify' booking.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+                            <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+                            <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+                        </form>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary btn-lg" type="button" id="rzp-button">
+                                <i class="bi bi-shield-check"></i> Pay with Razorpay
+                            </button>
+                            <a href="{% url 'charging:my_bookings' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to My Charging Bookings
+                            </a>
+                        </div>
+
+                        <p class="text-muted small text-center mt-4 mb-0">
+                            Razorpay Test Mode is enabled.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    (function(){
+        var options = {
+            key: "{{ razorpay_key_id }}",
+            amount: "{{ amount_paise }}",
+            currency: "INR",
+            name: "EV Service Platform",
+            description: "Charging Booking #{{ booking.id }}",
+            order_id: "{{ razorpay_order_id }}",
+            method: {
+                card: true,
+                netbanking: true,
+                wallet: true,
+                emi: true,
+                paylater: true,
+                upi: true
+            },
+            config: {
+                display: {
+                    preferences: { show_default_blocks: true }
+                }
+            },
+            handler: function (response){
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                document.getElementById('razorpayVerifyForm').submit();
+            },
+            modal: {
+                ondismiss: function(){
+                    alert('Payment was cancelled. Please try again.');
+                }
+            },
+            prefill: {
+                name: "{{ request.user.username }}",
+                email: "{{ request.user.email|default:'' }}",
+                contact: "{{ request.user.profile.phone_number|default:'' }}"
+            },
+            theme: { color: "#10b981" }
+        };
+        var rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response){
+            alert('Payment failed: ' + (response.error && response.error.description ? response.error.description : 'Unknown error'));
+        });
+        var btn = document.getElementById('rzp-button');
+        if(btn){
+            btn.onclick = function(e){
+                e.preventDefault();
+                rzp.open();
+            };
+        }
+    })();
+</script>
+
+{% endblock %}

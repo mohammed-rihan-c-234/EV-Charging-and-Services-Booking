@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h2 class="h4 mb-1">Hello {{ user.username }}</h2>
+      <p class="text-muted small mb-0">Welcome back to EV Service.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/bookings/new/" class="btn btn-primary"><i class="bi bi-calendar-plus"></i>Schedule service</a>
+      <a href="/map/" class="btn btn-outline-primary"><i class="bi bi-geo-alt-fill"></i>Open map</a>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Your vehicles</h5>
+            <a class="btn btn-sm btn-outline-primary" href="/vehicles/">Manage</a>
+          </div>
+          <hr>
+
+          {% if vehicles %}
+            <div class="table-responsive">
+              <table class="table table-striped align-middle">
+                <thead>
+                  <tr>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th>Year</th>
+                    <th>Plate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for v in vehicles %}
+                    <tr>
+                      <td>{{ v.make }}</td>
+                      <td>{{ v.model }}</td>
+                      <td>{{ v.year|default:"—" }}</td>
+                      <td>{{ v.license_plate|default:"—" }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="alert alert-info mb-0">
+              No vehicles linked to your account yet. Add vehicles from <a href="/admin/">Admin</a> or the Vehicles page.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Pending services</h5>
+            <a class="btn btn-sm btn-outline-primary" href="/bookings/mine/">View all</a>
+          </div>
+          <hr>
+
+          {% if pending_services %}
+            <div class="table-responsive">
+              <table class="table table-striped align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>When</th>
+                    <th>Service</th>
+                    <th>Center</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for b in pending_services %}
+                    <tr>
+                      <td>{{ b.scheduled_for }}</td>
+                      <td class="fw-semibold">{{ b.service_type.name }}</td>
+                      <td>{{ b.service_center.name }}</td>
+                      <td><span class="badge bg-secondary">{{ b.get_status_display }}</span></td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="alert alert-success mb-0">
+              No pending services right now.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm mt-3">
+        <div class="card-body">
+          <h5 class="mb-2">Quick links</h5>
+          <div class="d-grid gap-2">
+            <a class="btn btn-outline-primary" href="/charging/"><i class="bi bi-plug-fill"></i>Charging stations</a>
+            <a class="btn btn-outline-primary" href="/service-centers/"><i class="bi bi-building"></i>Service centers</a>
+            <a class="btn btn-outline-primary" href="/sos/new/"><i class="bi bi-exclamation-triangle-fill"></i>Submit SOS</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

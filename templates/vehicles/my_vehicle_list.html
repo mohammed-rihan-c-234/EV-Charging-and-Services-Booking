@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h2 class="h4 mb-1">My Vehicles</h2>
+      <p class="text-muted small mb-0">Vehicles linked to your account.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'vehicles:create' %}"><i class="bi bi-plus-lg"></i>Add vehicle</a>
+  </div>
+
+  {% if vehicles %}
+    <div class="row g-3">
+      {% for v in vehicles %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title mb-1">{{ v.make }} {{ v.model }}</h5>
+              <div class="text-muted small mb-3">
+                {% if v.year %}Year: {{ v.year }}{% else %}Year: —{% endif %}<br>
+                Plate: {{ v.license_plate|default:"—" }}
+              </div>
+              <a href="{% url 'vehicles:detail' v.pk %}" class="btn btn-sm btn-outline-primary">Details</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">No vehicles yet. Click “Add vehicle” to create one.</div>
+  {% endif %}
+{% endblock %}
+

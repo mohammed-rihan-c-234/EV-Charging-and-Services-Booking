@@ -1,0 +1,17 @@
+<!-- Feature Card Component -->
+<div class="col-lg-{{ cols|default:"4" }} col-md-6 mb-4" data-aos="fade-up" data-aos-delay="{{ delay|default:"0" }}">
+    <div class="card h-100">
+        <div class="card-body text-center">
+            {% if icon %}
+            <div style="font-size: 3rem; color: {{ icon_color|default:'var(--primary)' }}; margin-bottom: 1rem;">
+                <i class="{{ icon }}"></i>
+            </div>
+            {% endif %}
+            <h5 class="card-title">{{ title }}</h5>
+            <p class="card-text text-muted">{{ description }}</p>
+            {% if link %}
+            <a href="{{ link }}" class="btn btn-sm btn-outline-primary">{{ link_text|default:"Learn More" }}</a>
+            {% endif %}
+        </div>
+    </div>
+</div>

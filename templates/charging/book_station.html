@@ -1,0 +1,143 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Book Charging Station - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #fef3c7 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-lightning-charge" style="color: var(--success);"></i> Book Charging Session
+                </h1>
+                <p class="text-muted mb-0">Reserve your charging slot now</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Form -->
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="row g-4 justify-content-center">
+            <!-- Station Info -->
+            <div class="col-lg-4" data-aos="fade-right">
+                <div class="card border-0 h-100" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; padding: 1.5rem;">
+                        <h5 class="mb-0"><i class="bi bi-lightning-fill"></i> Station Information</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <h4 class="mb-3">{{ station.name }}</h4>
+                        
+                        <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                            <p class="text-muted small mb-2"><i class="bi bi-geo-alt"></i> Location</p>
+                            <p class="mb-0">{{ station.address|default:"Location details not available" }}</p>
+                        </div>
+
+                        <div class="mb-3 pb-3" style="border-bottom: 1px solid #e2e8f0;">
+                            <p class="text-muted small mb-2"><i class="bi bi-battery-full"></i> Available Slots</p>
+                            <p class="mb-0"><span class="badge" style="background: var(--success); color: white;">{{ station.available_slots }} Available</span></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <p class="text-muted small mb-2"><i class="bi bi-plug"></i> Plug Types</p>
+                            <p class="mb-0">{{ station.plug_types }}</p>
+                        </div>
+
+                        <!-- Availability Status -->
+                        <div class="alert alert-success d-flex align-items-center" style="border: none; background: #d1fae5;">
+                            <i class="bi bi-check-circle me-2" style="color: var(--success);"></i>
+                            <small><strong>Station is Active</strong></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);">
+                    <div class="card-header" style="background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%); color: white; border: none; padding: 1.5rem;">
+                        <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Booking Details</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Duration -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Charging Duration <span class="text-danger">*</span></label>
+                                <select id="durationSelect" name="duration" class="form-select" style="border: 2px solid #e2e8f0; border-radius: 0.75rem;">
+                                    <option value="1">1 Hour</option>
+                                    <option value="2" selected>2 Hours</option>
+                                    <option value="3">3 Hours</option>
+                                    <option value="4">4 Hours</option>
+                                    <option value="8">8 Hours (Overnight)</option>
+                                </select>
+                                <small class="text-muted">Select how long you'll need to charge</small>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Special Requirements (Optional)</label>
+                                <textarea name="notes" class="form-control" rows="3" placeholder="Any special requirements or notes..." style="border: 2px solid #e2e8f0; border-radius: 0.75rem;"></textarea>
+                            </div>
+
+                            <!-- Pricing Info -->
+                            <div class="p-3 mb-4" style="background: #f8fafc; border-radius: 0.75rem;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Estimated Charge</span>
+                                    <h5 id="estimatedAmount" data-price-per-hour="{{ station.price_per_hour }}" style="color: var(--success); margin: 0;">&#8377;{{ station.price_per_hour|floatformat:2 }}</h5>
+                                </div>
+                                <small class="text-muted d-block mt-2">Calculated as hours x price per hour (&#8377;{{ station.price_per_hour|floatformat:2 }}/hr)</small>
+                            </div>
+
+                            <!-- Agreement -->
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="agreement" required style="border: 2px solid #e2e8f0;">
+                                <label class="form-check-label" for="agreement">
+                                    <small>I agree to the charging station terms and conditions <span class="text-danger">*</span></small>
+                                </label>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); border: none;">
+                                    <i class="bi bi-check2"></i> Confirm Booking
+                                </button>
+                                <a href="{% url 'charging:list' %}" class="btn btn-outline-primary btn-lg">
+                                    <i class="bi bi-arrow-left"></i> Back to Stations
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function(){
+        var durationSelect = document.getElementById('durationSelect');
+        var amountEl = document.getElementById('estimatedAmount');
+        if(!durationSelect || !amountEl) return;
+
+        var pricePerHour = parseFloat(amountEl.getAttribute('data-price-per-hour')) || 0;
+
+        function updateEstimate(){
+            var hours = parseInt(durationSelect.value || "0", 10);
+            var total = hours * pricePerHour;
+            amountEl.textContent = "Rs. " + total.toFixed(2);
+        }
+
+        durationSelect.addEventListener('change', updateEstimate);
+        updateEstimate();
+    })();
+</script>
+{% endblock %}

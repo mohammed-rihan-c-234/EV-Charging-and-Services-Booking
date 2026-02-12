@@ -1,0 +1,254 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block title %}Emergency SOS Alert - EV Service Platform{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<section style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 50%, #fca5a5 100%); padding: 3rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container-lg">
+        <div class="row align-items-center">
+            <div class="col" data-aos="fade-right">
+                <h1 class="mb-2">
+                    <i class="bi bi-telephone-outbound" style="color: var(--danger);"></i> Emergency SOS Alert
+                </h1>
+                <p class="text-muted mb-0">Get immediate assistance from nearby service centers</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Alert -->
+<section class="section-padding">
+    <div class="container-lg">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8" data-aos="fade-up">
+                <div class="alert alert-danger alert-lg d-flex align-items-start" style="border-left: 5px solid var(--danger); background: rgba(239, 68, 68, 0.05);">
+                    <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 1.5rem; color: var(--danger);"></i>
+                    <div>
+                        <h5 class="mb-2">For Life-Threatening Emergencies</h5>
+                        <p class="mb-0 small">Always call emergency services first (911 or local emergency number) if you or anyone is in immediate danger. This form is for vehicle breakdowns and technical issues.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOS Form -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+                <div class="card border-0" style="box-shadow: 0 20px 40px rgba(239, 68, 68, 0.15);">
+                    <div class="card-body p-5">
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger d-flex align-items-center mb-4" style="border-left: 5px solid var(--danger);">
+                                <i class="bi bi-exclamation-circle-fill me-3" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <strong>Please correct the following errors:</strong>
+                                    <ul class="mb-0 mt-2">
+                                        {% for field, errors in form.errors.items %}
+                                            {% for error in errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <form method="post" id="sosForm" novalidate>
+                            {% csrf_token %}
+
+                            <!-- Personal Information -->
+                            <div class="mb-4">
+                                <h6 class="mb-3"><i class="bi bi-person-fill" style="color: var(--primary);"></i> Your Information</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Name <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                            <i class="bi bi-person"></i>
+                                        </span>
+                                        {{ form.name }}
+                                    </div>
+                                    {% if form.name.errors %}<div class="invalid-feedback d-block">{{ form.name.errors|striptags }}</div>{% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Contact Number <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                            <i class="bi bi-telephone"></i>
+                                        </span>
+                                        {{ form.contact }}
+                                    </div>
+                                    {% if form.contact.errors %}<div class="invalid-feedback d-block">{{ form.contact.errors|striptags }}</div>{% endif %}
+                                </div>
+                            </div>
+
+                            <hr style="border-color: #e2e8f0;">
+
+                            <!-- Vehicle Information -->
+                            <div class="mb-4">
+                                <h6 class="mb-3"><i class="bi bi-car-front-fill" style="color: var(--secondary);"></i> Vehicle Details</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Vehicle Model <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                <i class="bi bi-car-front"></i>
+                                            </span>
+                                            {{ form.vehicle_model }}
+                                        </div>
+                                        {% if form.vehicle_model.errors %}<div class="invalid-feedback d-block">{{ form.vehicle_model.errors|striptags }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Number Plate <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                <i class="bi bi-tags"></i>
+                                            </span>
+                                            {{ form.number_plate }}
+                                        </div>
+                                        {% if form.number_plate.errors %}<div class="invalid-feedback d-block">{{ form.number_plate.errors|striptags }}</div>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="border-color: #e2e8f0;">
+
+                            <!-- Location Section -->
+                            <div class="mb-4">
+                                <h6 class="mb-3"><i class="bi bi-geo-alt-fill" style="color: var(--success);"></i> Your Location</h6>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Latitude <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                <i class="bi bi-geo"></i>
+                                            </span>
+                                            {{ form.latitude }}
+                                        </div>
+                                        {% if form.latitude.errors %}<div class="invalid-feedback d-block">{{ form.latitude.errors|striptags }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Longitude <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                <i class="bi bi-geo"></i>
+                                            </span>
+                                            {{ form.longitude }}
+                                        </div>
+                                        {% if form.longitude.errors %}<div class="invalid-feedback d-block">{{ form.longitude.errors|striptags }}</div>{% endif %}
+                                    </div>
+                                </div>
+                                <button type="button" id="useLocationBtn" class="btn btn-outline-success btn-sm w-100">
+                                    <i class="bi bi-geo-alt-fill"></i> Get My Current Location
+                                </button>
+                            </div>
+
+                            <hr style="border-color: #e2e8f0;">
+
+                            <!-- Issue Description -->
+                            <div class="mb-4">
+                                <h6 class="mb-3"><i class="bi bi-exclamation-octagon-fill" style="color: var(--danger);"></i> Describe Your Issue</h6>
+                                <label class="form-label">Issue Description <span class="text-danger">*</span></label>
+                                {{ form.message }}
+                                <small class="form-text text-muted d-block mt-2">Be as specific as possible (e.g., engine won't start, battery dead, flat tire, overheating, etc.)</small>
+                                {% if form.message.errors %}<div class="invalid-feedback d-block">{{ form.message.errors|striptags }}</div>{% endif %}
+                            </div>
+
+                            <!-- Styling for form controls -->
+                            <style>
+                                .form-control, .form-select {
+                                    border: 1px solid #e2e8f0;
+                                    border-radius: 0.5rem;
+                                    padding: 0.75rem 1rem;
+                                    font-size: 0.95rem;
+                                    transition: all 0.3s ease;
+                                }
+                                .form-control:focus, .form-select:focus {
+                                    border-color: var(--danger);
+                                    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+                                }
+                                .form-control.is-invalid, .form-select.is-invalid {
+                                    border-color: var(--danger);
+                                }
+                                textarea.form-control {
+                                    resize: vertical;
+                                    min-height: 120px;
+                                }
+                            </style>
+
+                            <!-- Information Cards -->
+                            <div class="row g-3 mb-4 mt-2">
+                                <div class="col-md-6">
+                                    <div class="card border-0" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
+                                        <div class="card-body p-3">
+                                            <p class="mb-0 small"><strong>⏱️ Response Time</strong></p>
+                                            <p class="mb-0 small text-muted">Nearby service centers will be notified immediately</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-0" style="background: #d1fae5; border-left: 4px solid #10b981;">
+                                        <div class="card-body p-3">
+                                            <p class="mb-0 small"><strong>📍 Location Sharing</strong></p>
+                                            <p class="mb-0 small text-muted">Your location will help centers find you faster</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-3 mt-5">
+                                <button class="btn btn-lg" type="submit" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; font-weight: 600;">
+                                    <i class="bi bi-telephone-fill"></i> Send SOS Alert
+                                </button>
+                                <a class="btn btn-outline-secondary btn-lg" href="{% url 'home' %}">
+                                    <i class="bi bi-arrow-left"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Geolocation Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        const useLocationBtn = document.getElementById('useLocationBtn');
+        const latInput = document.querySelector('input[name="latitude"]');
+        const lngInput = document.querySelector('input[name="longitude"]');
+
+        if(useLocationBtn){
+            useLocationBtn.addEventListener('click', function(e){
+                e.preventDefault();
+                if(navigator.geolocation){
+                    useLocationBtn.disabled = true;
+                    useLocationBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Getting location...';
+                    
+                    navigator.geolocation.getCurrentPosition(
+                        function(position){
+                            latInput.value = position.coords.latitude.toFixed(6);
+                            lngInput.value = position.coords.longitude.toFixed(6);
+                            useLocationBtn.innerHTML = '<i class="bi bi-check-circle"></i> Location obtained!';
+                            useLocationBtn.classList.add('btn-success');
+                            useLocationBtn.classList.remove('btn-outline-success');
+                        },
+                        function(error){
+                            alert('Unable to get location. Please enter manually. Error: ' + error.message);
+                            useLocationBtn.disabled = false;
+                            useLocationBtn.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Use My Current Location';
+                        }
+                    );
+                } else {
+                    alert('Geolocation is not supported by your browser');
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}
