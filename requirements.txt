@@ -3,3 +3,5 @@ Django==4.2
 # You can add more packages later (djangorestframework, psycopg2, etc.)
 razorpay==1.4.2
 python-dotenv==1.0.1
+gunicorn==22.0.0
+whitenoise==6.7.0

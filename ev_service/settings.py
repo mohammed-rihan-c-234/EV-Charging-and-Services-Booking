@@ -13,12 +13,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if load_dotenv is not None:
     load_dotenv(BASE_DIR / ".env")
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'change-me-to-a-random-secret-in-production'
+def env_bool(value: str, default: bool = False) -> bool:
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "y", "on"}
 
-# For development only
-DEBUG = True
-ALLOWED_HOSTS = []
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "change-me-to-a-random-secret-in-production")
+
+# For development only (override in production)
+DEBUG = env_bool(os.getenv("DJANGO_DEBUG"), default=True)
+
+allowed_hosts = os.getenv("ALLOWED_HOSTS", "")
+if not allowed_hosts:
+    render_host = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
+    allowed_hosts = render_host
+ALLOWED_HOSTS = [h.strip() for h in allowed_hosts.split(",") if h.strip()]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,6 +56,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -78,7 +90,7 @@ WSGI_APPLICATION = 'ev_service.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.getenv("SQLITE_PATH", str(BASE_DIR / "db.sqlite3")),
     }
 }
 
@@ -92,6 +104,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files (user uploads)
 MEDIA_URL = '/media/'
