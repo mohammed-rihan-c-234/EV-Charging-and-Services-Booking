@@ -64,15 +64,25 @@
                                 <label class="form-label" for="{{ form.password.id_for_label }}">
                                     <i class="bi bi-key"></i> Password <span class="text-danger">*</span>
                                 </label>
-                                <input
-                                    class="form-control {% if form.password.errors %}is-invalid{% endif %}"
-                                    id="{{ form.password.id_for_label }}"
-                                    name="{{ form.password.html_name }}"
-                                    type="password"
-                                    autocomplete="current-password"
-                                    placeholder="Enter your password"
-                                    required
-                                >
+                                <div class="input-group">
+                                    <input
+                                        class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                                        id="{{ form.password.id_for_label }}"
+                                        name="{{ form.password.html_name }}"
+                                        type="password"
+                                        autocomplete="current-password"
+                                        placeholder="Enter your password"
+                                        required
+                                    >
+                                    <button
+                                        class="btn btn-outline-secondary"
+                                        type="button"
+                                        id="togglePassword"
+                                        aria-label="Show password"
+                                    >
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                                 {% if form.password.errors %}
                                     <div class="invalid-feedback d-block">
                                         <i class="bi bi-exclamation-triangle"></i>
@@ -122,4 +132,25 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        const toggle = document.getElementById("togglePassword");
+        const input = document.getElementById("{{ form.password.id_for_label }}");
+        if (!toggle || !input) return;
+
+        toggle.addEventListener("click", function () {
+            const isPassword = input.type === "password";
+            input.type = isPassword ? "text" : "password";
+            this.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+            const icon = this.querySelector("i");
+            if (icon) {
+                icon.classList.toggle("bi-eye", !isPassword);
+                icon.classList.toggle("bi-eye-slash", isPassword);
+            }
+        });
+    })();
+</script>
 {% endblock %}
