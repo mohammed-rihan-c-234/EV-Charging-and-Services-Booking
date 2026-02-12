@@ -12,3 +12,10 @@ services:
         generateValue: true
       - key: SQLITE_PATH
         value: /tmp/db.sqlite3
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ev-charging-booking-and-services-db
+          property: connectionString
+databases:
+  - name: ev-charging-booking-and-services-db
+    plan: free

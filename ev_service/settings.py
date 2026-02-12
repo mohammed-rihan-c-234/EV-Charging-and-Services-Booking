@@ -9,6 +9,11 @@ try:
 except Exception:
     load_dotenv = None
 
+try:
+    import dj_database_url
+except Exception:
+    dj_database_url = None
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 if load_dotenv is not None:
     load_dotenv(BASE_DIR / ".env")
@@ -89,13 +94,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ev_service.wsgi.application'
 
-# Use SQLite for simplicity - no external DB needed
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.getenv("SQLITE_PATH", str(BASE_DIR / "db.sqlite3")),
+# Database: prefer DATABASE_URL (Render Postgres), fallback to SQLite
+database_url = os.getenv("DATABASE_URL", "").strip()
+if database_url and dj_database_url is not None:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=database_url,
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.getenv("SQLITE_PATH", str(BASE_DIR / "db.sqlite3")),
+        }
+    }
 
 # Password validation - keep defaults
 AUTH_PASSWORD_VALIDATORS = []
