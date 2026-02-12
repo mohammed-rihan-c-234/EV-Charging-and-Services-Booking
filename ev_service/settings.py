@@ -30,6 +30,8 @@ if not allowed_hosts:
     render_host = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
     allowed_hosts = render_host
 ALLOWED_HOSTS = [h.strip() for h in allowed_hosts.split(",") if h.strip()]
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
