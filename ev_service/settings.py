@@ -26,7 +26,8 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "change-me-to-a-random-secret-in-pro
 DEBUG = env_bool(os.getenv("DJANGO_DEBUG"), default=True)
 
 allowed_hosts = os.getenv("ALLOWED_HOSTS", "")
-if not allowed_hosts:
+# Render does not expand env references inside render.yaml; handle literal placeholder.
+if allowed_hosts.strip() in {"", "${RENDER_EXTERNAL_HOSTNAME}"}:
     render_host = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
     allowed_hosts = render_host
 ALLOWED_HOSTS = [h.strip() for h in allowed_hosts.split(",") if h.strip()]
