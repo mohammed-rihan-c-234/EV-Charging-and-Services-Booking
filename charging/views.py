@@ -7,7 +7,7 @@ import razorpay
 from .models import ChargingStation, ChargingBooking
 from django.http import JsonResponse
 from django.utils import timezone
-from datetime import timedelta
+from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from rewards.utils import award_points
 from rewards.models import RewardAccount
 
@@ -37,10 +37,55 @@ def api_stations(request):
 def book_charging(request, station_id):
     """Book a charging session at a station."""
     station = get_object_or_404(ChargingStation, pk=station_id)
-    
+
     if request.method == 'POST':
-        duration_hours = int(request.POST.get('duration', 2))
-        scheduled_at = timezone.now() + timedelta(minutes=15)
+        duration_hours = int(request.POST.get('duration', 2) or 2)
+        notes = (request.POST.get("notes") or "").strip()
+        scheduled_date_input = (request.POST.get("scheduled_date") or "").strip()
+        scheduled_time_input = (request.POST.get("scheduled_time") or "").strip()
+        scheduled_at_input = (request.POST.get("scheduled_at") or "").strip()
+
+        scheduled_at = None
+        if scheduled_date_input and scheduled_time_input:
+            parsed_date = parse_date(scheduled_date_input)
+            parsed_time = parse_time(scheduled_time_input)
+            if parsed_date and parsed_time:
+                combined_dt = timezone.datetime.combine(parsed_date, parsed_time)
+                scheduled_at = timezone.make_aware(combined_dt, timezone.get_current_timezone())
+        elif scheduled_at_input:
+            parsed_dt = parse_datetime(scheduled_at_input)
+            if parsed_dt:
+                if timezone.is_naive(parsed_dt):
+                    scheduled_at = timezone.make_aware(parsed_dt, timezone.get_current_timezone())
+                else:
+                    scheduled_at = parsed_dt
+
+        if not scheduled_at:
+            messages.error(request, "Please choose a valid charging date and time.")
+            return render(
+                request,
+                'charging/book_station.html',
+                {
+                    'station': station,
+                    'duration': duration_hours,
+                    'scheduled_date': scheduled_date_input,
+                    'scheduled_time': scheduled_time_input,
+                    'notes': notes,
+                },
+            )
+        if scheduled_at <= timezone.now():
+            messages.error(request, "Charging date and time must be in the future.")
+            return render(
+                request,
+                'charging/book_station.html',
+                {
+                    'station': station,
+                    'duration': duration_hours,
+                    'scheduled_date': scheduled_date_input,
+                    'scheduled_time': scheduled_time_input,
+                    'notes': notes,
+                },
+            )
         
         # Create charging booking
         booking = ChargingBooking.objects.create(

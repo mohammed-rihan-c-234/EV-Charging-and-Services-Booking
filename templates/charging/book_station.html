@@ -70,19 +70,47 @@
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Charging Duration <span class="text-danger">*</span></label>
                                 <select id="durationSelect" name="duration" class="form-select" style="border: 2px solid #e2e8f0; border-radius: 0.75rem;">
-                                    <option value="1">1 Hour</option>
-                                    <option value="2" selected>2 Hours</option>
-                                    <option value="3">3 Hours</option>
-                                    <option value="4">4 Hours</option>
-                                    <option value="8">8 Hours (Overnight)</option>
+                                    <option value="1" {% if duration|stringformat:"s" == "1" %}selected{% endif %}>1 Hour</option>
+                                    <option value="2" {% if duration|stringformat:"s" == "2" or not duration %}selected{% endif %}>2 Hours</option>
+                                    <option value="3" {% if duration|stringformat:"s" == "3" %}selected{% endif %}>3 Hours</option>
+                                    <option value="4" {% if duration|stringformat:"s" == "4" %}selected{% endif %}>4 Hours</option>
+                                    <option value="8" {% if duration|stringformat:"s" == "8" %}selected{% endif %}>8 Hours (Overnight)</option>
                                 </select>
                                 <small class="text-muted">Select how long you'll need to charge</small>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Charging Date <span class="text-danger">*</span></label>
+                                    <input
+                                        id="scheduledDate"
+                                        name="scheduled_date"
+                                        type="date"
+                                        class="form-control"
+                                        style="border: 2px solid #e2e8f0; border-radius: 0.75rem;"
+                                        value="{{ scheduled_date|default:'' }}"
+                                        required
+                                    >
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Charging Time <span class="text-danger">*</span></label>
+                                    <input
+                                        id="scheduledTime"
+                                        name="scheduled_time"
+                                        type="time"
+                                        class="form-control"
+                                        style="border: 2px solid #e2e8f0; border-radius: 0.75rem;"
+                                        value="{{ scheduled_time|default:'' }}"
+                                        required
+                                    >
+                                </div>
+                                <small class="text-muted">Choose your preferred session date and start time</small>
                             </div>
 
                             <!-- Notes -->
                             <div class="mb-4">
                                 <label class="form-label fw-semibold">Special Requirements (Optional)</label>
-                                <textarea name="notes" class="form-control" rows="3" placeholder="Any special requirements or notes..." style="border: 2px solid #e2e8f0; border-radius: 0.75rem;"></textarea>
+                                <textarea name="notes" class="form-control" rows="3" placeholder="Any special requirements or notes..." style="border: 2px solid #e2e8f0; border-radius: 0.75rem;">{{ notes|default:'' }}</textarea>
                             </div>
 
                             <!-- Pricing Info -->
@@ -138,6 +166,12 @@
 
         durationSelect.addEventListener('change', updateEstimate);
         updateEstimate();
+
+        var scheduledDateInput = document.getElementById('scheduledDate');
+        if (scheduledDateInput) {
+            var now = new Date();
+            scheduledDateInput.min = now.toISOString().slice(0, 10);
+        }
     })();
 </script>
 {% endblock %}

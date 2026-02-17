@@ -134,6 +134,26 @@ def dashboard(request):
         or (hasattr(u, "profile") and getattr(getattr(u, "profile", None), "role", "") == "service_center")
     )
 )
+def booking_detail(request, pk):
+    booking = get_object_or_404(
+        ServiceBooking.objects.select_related("service_center", "service_type", "vehicle", "user"),
+        pk=pk,
+    )
+    if not request.user.is_staff:
+        profile = getattr(request.user, "profile", None)
+        if not getattr(profile, "service_center_id", None) or profile.service_center_id != booking.service_center_id:
+            return redirect("service_center:dashboard")
+    return render(request, "service_center/booking_detail.html", {"booking": booking})
+
+
+@login_required
+@user_passes_test(
+    lambda u: bool(
+        getattr(u, "is_staff", False)
+        or u.groups.filter(name="service_center").exists()
+        or (hasattr(u, "profile") and getattr(getattr(u, "profile", None), "role", "") == "service_center")
+    )
+)
 @require_POST
 def booking_decide(request, pk):
     booking = get_object_or_404(ServiceBooking, pk=pk)

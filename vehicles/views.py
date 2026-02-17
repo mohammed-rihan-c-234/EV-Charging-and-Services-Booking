@@ -7,15 +7,16 @@ from .forms import VehicleForm
 
 
 # Simple view to list vehicles. Non-technical friendly comments included.
+@login_required
 def vehicle_list(request):
     """Show a list of registered vehicles."""
-    vehicles = Vehicle.objects.all()
+    vehicles = Vehicle.objects.for_user(request.user)
     return render(request, 'vehicles/vehicle_list.html', {'vehicles': vehicles})
 
 def vehicle_detail(request, pk):
-    vehicle = get_object_or_404(Vehicle, pk=pk)
-    if vehicle.owner_id and (not request.user.is_authenticated or (vehicle.owner_id != request.user.id and not request.user.is_staff)):
+    if not request.user.is_authenticated:
         raise Http404()
+    vehicle = get_object_or_404(Vehicle.objects.for_user(request.user), pk=pk)
     return render(request, 'vehicles/vehicle_detail.html', {'vehicle': vehicle})
 
 

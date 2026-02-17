@@ -23,6 +23,28 @@
 <section class="section-padding">
     <div class="container-lg">
         <div class="card border-0" style="box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); overflow: hidden;">
+            <div class="card-body p-3" style="border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-8">
+                        <label for="mapSearchInput" class="form-label small text-muted mb-1">Search Location</label>
+                        <input
+                            id="mapSearchInput"
+                            type="text"
+                            class="form-control"
+                            placeholder="Search city, area, address, or landmark"
+                        >
+                    </div>
+                    <div class="col-md-4 d-flex gap-2 pt-md-4">
+                        <button id="mapSearchBtn" type="button" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                        <button id="mapSearchClearBtn" type="button" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Map Container -->
             <div id="map" style="height: 70vh; width: 100%; border-radius: 0.75rem;"></div>
             
@@ -77,7 +99,11 @@
         var layerStations = L.layerGroup().addTo(map);
         var layerCenters = L.layerGroup().addTo(map);
         var layerMe = L.layerGroup().addTo(map);
+        var layerSearch = L.layerGroup().addTo(map);
         var meLatLng = null;
+        var searchInput = document.getElementById('mapSearchInput');
+        var searchBtn = document.getElementById('mapSearchBtn');
+        var clearSearchBtn = document.getElementById('mapSearchClearBtn');
 
         function addMeMarker(lat, lng){
             layerMe.clearLayers();
@@ -121,6 +147,63 @@
                     setStatus('Showing ' + (data.stations ? data.stations.length : 0) + ' charging stations. Enable location for better results.');
                 })
                 .catch(e => setStatus('Error loading stations'));
+        }
+
+        function searchLocation(){
+            var query = (searchInput && searchInput.value ? searchInput.value : '').trim();
+            if(query.length < 2){
+                setStatus('Enter at least 2 characters to search.');
+                return;
+            }
+            setStatus('Searching location...');
+            fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&q=' + encodeURIComponent(query), {
+                headers: { 'Accept': 'application/json' }
+            })
+                .then(function(r){ return r.json(); })
+                .then(function(results){
+                    if(!Array.isArray(results) || results.length === 0){
+                        setStatus('No location found for "' + query + '".');
+                        return;
+                    }
+                    var first = results[0];
+                    var lat = parseFloat(first.lat);
+                    var lng = parseFloat(first.lon);
+                    if(!isFinite(lat) || !isFinite(lng)){
+                        setStatus('Could not read search location coordinates.');
+                        return;
+                    }
+                    layerSearch.clearLayers();
+                    L.marker([lat, lng])
+                        .bindPopup('<strong>Search Result</strong><br>' + (first.display_name || query))
+                        .addTo(layerSearch)
+                        .openPopup();
+                    map.setView([lat, lng], 13);
+                    loadNearby(lat, lng);
+                })
+                .catch(function(){
+                    setStatus('Location search failed. Please try again.');
+                });
+        }
+
+        if(searchBtn){
+            searchBtn.addEventListener('click', searchLocation);
+        }
+        if(searchInput){
+            searchInput.addEventListener('keydown', function(e){
+                if(e.key === 'Enter'){
+                    e.preventDefault();
+                    searchLocation();
+                }
+            });
+        }
+        if(clearSearchBtn){
+            clearSearchBtn.addEventListener('click', function(){
+                if(searchInput){
+                    searchInput.value = '';
+                }
+                layerSearch.clearLayers();
+                setStatus('Search cleared.');
+            });
         }
 
         if(navigator.geolocation){

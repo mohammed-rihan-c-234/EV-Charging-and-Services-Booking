@@ -201,15 +201,27 @@
                                 <label class="form-label" for="{{ form.password1.id_for_label }}">
                                     <i class="bi bi-key"></i> Password <span class="text-danger">*</span>
                                 </label>
-                                <input
-                                    class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
-                                    id="{{ form.password1.id_for_label }}"
-                                    name="{{ form.password1.html_name }}"
-                                    type="password"
-                                    autocomplete="new-password"
-                                    placeholder="Create a strong password"
-                                    required
-                                >
+                                <div class="position-relative">
+                                    <input
+                                        class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+                                        id="{{ form.password1.id_for_label }}"
+                                        name="{{ form.password1.html_name }}"
+                                        type="password"
+                                        autocomplete="new-password"
+                                        placeholder="Create a strong password"
+                                        style="padding-right: 2.75rem;"
+                                        required
+                                    >
+                                    <button
+                                        class="btn btn-sm btn-outline-secondary password-toggle-btn"
+                                        type="button"
+                                        id="togglePassword1"
+                                        aria-label="Show password"
+                                        style="position:absolute; right:0.5rem; top:50%; transform:translateY(-50%); z-index:10; min-width:3.25rem;"
+                                    >
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                                 {% if form.password1.help_text %}
                                     <div class="form-text small">{{ form.password1.help_text|safe }}</div>
                                 {% endif %}
@@ -226,15 +238,27 @@
                                 <label class="form-label" for="{{ form.password2.id_for_label }}">
                                     <i class="bi bi-lock-check"></i> Confirm Password <span class="text-danger">*</span>
                                 </label>
-                                <input
-                                    class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
-                                    id="{{ form.password2.id_for_label }}"
-                                    name="{{ form.password2.html_name }}"
-                                    type="password"
-                                    autocomplete="new-password"
-                                    placeholder="Re-enter your password"
-                                    required
-                                >
+                                <div class="position-relative">
+                                    <input
+                                        class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+                                        id="{{ form.password2.id_for_label }}"
+                                        name="{{ form.password2.html_name }}"
+                                        type="password"
+                                        autocomplete="new-password"
+                                        placeholder="Re-enter your password"
+                                        style="padding-right: 2.75rem;"
+                                        required
+                                    >
+                                    <button
+                                        class="btn btn-sm btn-outline-secondary password-toggle-btn"
+                                        type="button"
+                                        id="togglePassword2"
+                                        aria-label="Show password"
+                                        style="position:absolute; right:0.5rem; top:50%; transform:translateY(-50%); z-index:10; min-width:3.25rem;"
+                                    >
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                                 {% if form.password2.help_text %}
                                     <div class="form-text small">{{ form.password2.help_text|safe }}</div>
                                 {% endif %}
@@ -271,7 +295,28 @@
                                         toggleServiceCenterFields();
                                     }
                                 });
+
+                                function wirePasswordToggle(buttonId, inputId){
+                                    var toggle = document.getElementById(buttonId);
+                                    var input = document.getElementById(inputId);
+                                    if(!toggle || !input) return;
+                                    toggle.addEventListener('click', function(){
+                                        var isPassword = input.type === 'password';
+                                        input.type = isPassword ? 'text' : 'password';
+                                        this.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+                                        var icon = this.querySelector('i');
+                                        if(icon){
+                                            icon.classList.toggle('bi-eye', !isPassword);
+                                            icon.classList.toggle('bi-eye-slash', isPassword);
+                                        }
+                                    });
+                                }
+
                                 document.addEventListener('DOMContentLoaded', toggleServiceCenterFields);
+                                document.addEventListener('DOMContentLoaded', function(){
+                                    wirePasswordToggle('togglePassword1', "{{ form.password1.id_for_label }}");
+                                    wirePasswordToggle('togglePassword2', "{{ form.password2.id_for_label }}");
+                                });
                             })();
                         </script>
 

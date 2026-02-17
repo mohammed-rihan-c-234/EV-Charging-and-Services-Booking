@@ -30,7 +30,7 @@ class ServiceBookingForm(forms.ModelForm):
         self.fields["notes"].widget.attrs.setdefault("class", "form-control")
         self.fields["service_center"].queryset = ServiceCenter.objects.all().order_by("name")
         if user and getattr(user, "is_authenticated", False):
-            self.fields["vehicle"].queryset = Vehicle.objects.filter(owner=user).order_by("make", "model")
+            self.fields["vehicle"].queryset = Vehicle.objects.for_user(user).order_by("make", "model")
         else:
             self.fields["vehicle"].queryset = Vehicle.objects.none()
         self.fields["vehicle"].empty_label = "Select your vehicle"

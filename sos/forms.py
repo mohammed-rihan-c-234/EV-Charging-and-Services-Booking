@@ -50,7 +50,7 @@ class SOSForm(forms.ModelForm):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         if user and getattr(user, "is_authenticated", False):
-            self.fields["vehicle"].queryset = Vehicle.objects.filter(owner=user).order_by("make", "model")
+            self.fields["vehicle"].queryset = Vehicle.objects.for_user(user).order_by("make", "model")
         self.fields["vehicle_model"].widget.attrs.setdefault("readonly", True)
         for field_name in ("address", "message", "contact"):
             self.fields[field_name].required = True

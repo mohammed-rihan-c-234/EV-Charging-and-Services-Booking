@@ -4,7 +4,6 @@ from django.urls import path, include
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
-from django.db.models import Q
 from django.utils import timezone
 from django.conf import settings
 from django.conf.urls.static import static
@@ -27,17 +26,7 @@ def home(request):
     from vehicles.models import Vehicle
     from bookings.models import ServiceBooking
 
-    profile_name = ""
-    try:
-        profile_name = request.user.profile.full_name  # type: ignore[attr-defined]
-    except Exception:
-        profile_name = ""
-
-    vehicles = Vehicle.objects.filter(
-        Q(owner=request.user)
-        | Q(owner_name=request.user.username)
-        | (Q(owner_name=profile_name) if profile_name else Q(pk__in=[]))
-    )
+    vehicles = Vehicle.objects.for_user(request.user)
 
     pending_services = ServiceBooking.objects.filter(
         user=request.user,

@@ -25,6 +25,7 @@
             </td>
             <td><span class="badge bg-secondary">{{ b.get_approval_status_display }}</span></td>
             <td class="text-end">
+              <a href="{% url 'service_center:booking_detail' b.pk %}" class="btn btn-sm btn-outline-primary">View Detail</a>
               {% if b.payment_status != 'unpaid' and b.approval_status == 'pending' %}
                 <form method="post" action="{% url 'service_center:booking_decide' b.pk %}" class="d-inline">
                   {% csrf_token %}
@@ -44,4 +45,3 @@
     </table>
   </div>
 {% endif %}
-

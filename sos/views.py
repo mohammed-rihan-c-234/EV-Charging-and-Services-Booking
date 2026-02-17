@@ -65,7 +65,7 @@ def sos_submit(request):
                 pass
         form = SOSForm(user=request.user, initial=initial)
 
-    user_vehicles = Vehicle.objects.filter(owner=request.user).order_by("make", "model") if request.user.is_authenticated else Vehicle.objects.none()
+    user_vehicles = Vehicle.objects.for_user(request.user).order_by("make", "model") if request.user.is_authenticated else Vehicle.objects.none()
     return render(request, 'sos/sos_alert_form.html', {'form': form, 'user_vehicles': user_vehicles})
 
 

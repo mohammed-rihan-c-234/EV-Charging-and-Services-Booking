@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from decimal import Decimal
 from django.conf import settings
 import razorpay
@@ -34,7 +34,7 @@ def booking_create(request):
     else:
         form = ServiceBookingForm(initial=initial, user=request.user)
 
-    user_vehicles = Vehicle.objects.filter(owner=request.user).order_by("make", "model")
+    user_vehicles = Vehicle.objects.for_user(request.user).order_by("make", "model")
     return render(request, "bookings/booking_form.html", {"form": form, "user_vehicles": user_vehicles})
 
 
@@ -42,6 +42,16 @@ def booking_create(request):
 def my_bookings(request):
     qs = ServiceBooking.objects.filter(user=request.user)
     return render(request, "bookings/my_bookings.html", {"bookings": qs})
+
+
+@login_required
+def booking_detail(request, pk):
+    booking = get_object_or_404(
+        ServiceBooking.objects.select_related("service_type", "service_center", "vehicle"),
+        pk=pk,
+        user=request.user,
+    )
+    return render(request, "bookings/booking_detail.html", {"booking": booking})
 
 
 @login_required

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.forms.utils import ErrorList
 import re
 
 from .models import Profile
@@ -8,6 +9,7 @@ from service_center.models import ServiceCenter
 
 
 class SignUpForm(UserCreationForm):
+    username = forms.CharField(max_length=150, label="Username")
     full_name = forms.CharField(max_length=150, label="First name", required=False)
     phone_number = forms.CharField(max_length=30, label="Phone number", required=False)
     center_name = forms.CharField(max_length=200, label="Name of Center", required=False)
@@ -28,20 +30,28 @@ class SignUpForm(UserCreationForm):
         username = self.cleaned_data.get("username", "").strip()
         if not username:
             raise forms.ValidationError("Username is required.")
-        
-        # Check if username contains only alphanumeric characters
-        if not username.isalnum():
-            raise forms.ValidationError("Username can only contain letters and numbers (no spaces or special characters).")
-        
-        # Check if username is only numbers
-        if username.isdigit():
-            raise forms.ValidationError("Username cannot be only numbers. Include at least one letter.")
+        if re.search(r"\s", username):
+            raise forms.ValidationError("Username cannot contain spaces.")
         
         # Check if username already exists
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError("This username is already taken.")
-        
+
         return username
+
+    def clean_password1(self):
+        password = self.cleaned_data.get("password1", "")
+        if len(password) < 8:
+            raise forms.ValidationError("Password must be at least 8 characters long.")
+        if not re.search(r"[A-Z]", password):
+            raise forms.ValidationError("Password must include at least one uppercase letter.")
+        if not re.search(r"[a-z]", password):
+            raise forms.ValidationError("Password must include at least one lowercase letter.")
+        if not re.search(r"\d", password):
+            raise forms.ValidationError("Password must include at least one number.")
+        if not re.search(r"[^A-Za-z0-9]", password):
+            raise forms.ValidationError("Password must include at least one special character.")
+        return password
 
     def clean_full_name(self):
         value = (self.cleaned_data.get("full_name") or "").strip()
@@ -52,6 +62,25 @@ class SignUpForm(UserCreationForm):
             if not value.replace(" ", "").isalpha():
                 raise forms.ValidationError("First name can contain only alphabets and spaces.")
         return value
+
+    def _post_clean(self):
+        super()._post_clean()
+        self._clear_username_character_error()
+
+    def _clear_username_character_error(self):
+        errors = self.errors.get("username")
+        if not errors:
+            return
+        kept_errors = []
+        for err in errors:
+            message = str(err).lower()
+            if "valid username" in message and "@/./+/-/_" in message:
+                continue
+            kept_errors.append(err)
+        if kept_errors:
+            self._errors["username"] = ErrorList(kept_errors)
+        elif "username" in self._errors:
+            del self._errors["username"]
 
     def clean_phone_number(self):
         value = (self.cleaned_data.get("phone_number") or "").strip()
@@ -109,6 +138,8 @@ class SignUpForm(UserCreationForm):
 
 
 class UserProfileEditForm(forms.ModelForm):
+    username = forms.CharField(max_length=150, required=True)
+
     class Meta:
         model = User
         fields = ("username", "email")
@@ -122,10 +153,8 @@ class UserProfileEditForm(forms.ModelForm):
         username = (self.cleaned_data.get("username") or "").strip()
         if not username:
             raise forms.ValidationError("Username is required.")
-        if not username.isalnum():
-            raise forms.ValidationError("Username can only contain letters and numbers (no spaces or special characters).")
-        if username.isdigit():
-            raise forms.ValidationError("Username cannot be only numbers. Include at least one letter.")
+        if re.search(r"\s", username):
+            raise forms.ValidationError("Username cannot contain spaces.")
         qs = User.objects.filter(username=username)
         if self.instance and self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
@@ -136,6 +165,22 @@ class UserProfileEditForm(forms.ModelForm):
     def clean_email(self):
         email = (self.cleaned_data.get("email") or "").strip()
         return email
+
+    def _post_clean(self):
+        super()._post_clean()
+        errors = self.errors.get("username")
+        if not errors:
+            return
+        kept_errors = []
+        for err in errors:
+            message = str(err).lower()
+            if "valid username" in message and "@/./+/-/_" in message:
+                continue
+            kept_errors.append(err)
+        if kept_errors:
+            self._errors["username"] = ErrorList(kept_errors)
+        elif "username" in self._errors:
+            del self._errors["username"]
 
 
 class ProfileEditForm(forms.ModelForm):
