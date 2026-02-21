@@ -10,7 +10,7 @@ from service_center.models import ServiceCenter
 
 class SignUpForm(UserCreationForm):
     username = forms.CharField(max_length=150, label="Username")
-    full_name = forms.CharField(max_length=150, label="First name", required=False)
+    full_name = forms.CharField(max_length=150, label="Full name", required=False)
     phone_number = forms.CharField(max_length=30, label="Phone number", required=False)
     center_name = forms.CharField(max_length=200, label="Name of Center", required=False)
     center_phone = forms.CharField(max_length=30, label="Center Phone", required=False)
@@ -92,6 +92,7 @@ class SignUpForm(UserCreationForm):
                 raise forms.ValidationError("Phone number must contain only digits.")
             if len(value) != 10:
                 raise forms.ValidationError("Phone number must be exactly 10 digits.")
+            return value
         return value
 
     def clean(self):
@@ -107,6 +108,10 @@ class SignUpForm(UserCreationForm):
                 self.add_error("center_name", "Center name must contain only alphabets.")
             if not center_phone:
                 self.add_error("center_phone", "Center phone is required.")
+            if center_phone and not center_phone.isdigit():
+                self.add_error("center_phone", "Center phone must contain only digits.")
+            if center_phone and len(center_phone) != 10:
+                self.add_error("center_phone", "Center phone must be exactly 10 digits.")
             if not center_address:
                 self.add_error("center_address", "Center address is required.")
         return cleaned
@@ -196,8 +201,20 @@ class ProfileEditForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["full_name"].widget.attrs.setdefault("class", "form-control")
         self.fields["phone_number"].widget.attrs.setdefault("class", "form-control")
+        self.fields["phone_number"].max_length = 10
+        self.fields["phone_number"].min_length = 10
+        self.fields["phone_number"].widget.attrs["inputmode"] = "numeric"
+        self.fields["phone_number"].widget.attrs["maxlength"] = "10"
+        self.fields["phone_number"].widget.attrs["minlength"] = "10"
+        self.fields["phone_number"].widget.attrs["pattern"] = "[0-9]{10}"
         self.fields["center_name"].widget.attrs.setdefault("class", "form-control")
         self.fields["center_phone"].widget.attrs.setdefault("class", "form-control")
+        self.fields["center_phone"].max_length = 10
+        self.fields["center_phone"].min_length = 10
+        self.fields["center_phone"].widget.attrs["inputmode"] = "numeric"
+        self.fields["center_phone"].widget.attrs["maxlength"] = "10"
+        self.fields["center_phone"].widget.attrs["minlength"] = "10"
+        self.fields["center_phone"].widget.attrs["pattern"] = "[0-9]{10}"
         self.fields["center_address"].widget.attrs.setdefault("class", "form-control")
         if self.instance and getattr(self.instance, "role", "") == Profile.ROLE_SERVICE_CENTER:
             center = getattr(self.instance, "service_center", None)
@@ -205,6 +222,8 @@ class ProfileEditForm(forms.ModelForm):
                 self.fields["center_name"].initial = center.name
                 self.fields["center_phone"].initial = center.phone
                 self.fields["center_address"].initial = center.address
+        else:
+            self.fields["phone_number"].required = True
 
     def clean_phone_number(self):
         value = (self.cleaned_data.get("phone_number") or "").strip()

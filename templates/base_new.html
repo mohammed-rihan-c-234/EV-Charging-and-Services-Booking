@@ -608,57 +608,53 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    {% if '/admin-portal/' in request.path %}
+                    {% else %}
                     {% if user.is_authenticated %}
                     {% is_service_center as is_sc %}
                     {% if is_sc %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/service-centers/dashboard/">Dashboard</a>
+                        <a class="nav-link {% active_nav '/service-centers/dashboard/' %}" href="/service-centers/dashboard/">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/service-centers/dashboard/#appointments">Appointments</a>
+                        <a class="nav-link {% active_nav '/service-centers/dashboard/' %}" href="/service-centers/dashboard/#appointments">Appointments</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/service-centers/dashboard/#customer-orders">Customer Orders</a>
+                        <a class="nav-link {% active_nav '/service-centers/dashboard/' %}" href="/service-centers/dashboard/#customer-orders">Customer Orders</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/logout/">Logout</a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/dashboard/">Dashboard</a>
+                        <a class="nav-link {% active_nav '/dashboard/' %} {% active_nav '/home/' %}" href="/dashboard/">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/vehicles/">Vehicles</a>
+                        <a class="nav-link {% active_nav '/vehicles/' %}" href="/vehicles/">Vehicles</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if '/bookings/' in request.path or '/charging/' in request.path or '/sos/' in request.path or '/parts/' in request.path or '/spareparts/' in request.path or '/chat/' in request.path or '/chatbox/' in request.path %}active{% endif %}" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Services
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="servicesDropdown">
+                            <li><a class="dropdown-item" href="/bookings/new/">Service Booking</a></li>
+                            <li><a class="dropdown-item" href="/bookings/mine/">My Service Bookings</a></li>
+                            <li><a class="dropdown-item" href="/charging/">Charging Stations</a></li>
+                            <li><a class="dropdown-item" href="/charging/bookings/mine/">My Charging Bookings</a></li>
+                            <li><a class="dropdown-item" href="/sos/">SOS Alert</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/spareparts/">Spare Parts</a></li>
+                            <li><a class="dropdown-item" href="/spareparts/cart/">Cart</a></li>
+                            <li><a class="dropdown-item" href="/spareparts/orders/">Spare Part Orders</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/chatbox/">Support Chat</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/bookings/new/">Service Booking</a>
+                        <a class="nav-link {% active_nav '/rewards/' %}" href="/rewards/">Rewards</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/charging/">Charging Stations</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/sos/">Emergency SOS</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/spareparts/">Spare Parts</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/spareparts/cart/">Cart</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/spareparts/orders/">My Orders</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/chatbox/">Support Chat</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/rewards/">Rewards</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/charging/bookings/mine/">My Charging</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/profile/">Profile</a>
+                        <a class="nav-link {% active_nav '/profile/' %}" href="/profile/">Profile</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/logout/">Logout</a>
@@ -669,11 +665,9 @@
                         <a class="nav-link" href="/about/">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/contact/">Contact</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="btn btn-primary btn-sm ms-2" href="/login/">Login</a>
                     </li>
+                    {% endif %}
                     {% endif %}
                 </ul>
             </div>
@@ -718,7 +712,6 @@
                     <h5>Resources</h5>
                     <ul class="list-unstyled">
                         <li><a href="/about/">About</a></li>
-                        <li><a href="/contact/">Contact</a></li>
                         <li><a href="/testimonials/">Testimonials</a></li>
                         <li><a href="/faq/">FAQ</a></li>
                     </ul>

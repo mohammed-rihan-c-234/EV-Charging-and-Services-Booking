@@ -37,6 +37,12 @@ class VehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
         fields = ["make", "model", "year", "license_plate"]
+        labels = {
+            "make": "Manufacturing Company",
+            "model": "Manufacturing Model",
+            "year": "Manufacturing Year",
+            "license_plate": "Licence plate",
+        }
         widgets = {
             "make": forms.TextInput(attrs={"class": "form-control"}),
             "model": forms.TextInput(attrs={"class": "form-control"}),

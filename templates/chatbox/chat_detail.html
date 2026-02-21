@@ -27,7 +27,7 @@
                                 <div class="p-3 rounded-3" style="max-width: 75%; background: var(--primary); color: white;">
                                     <div class="fw-semibold mb-1">{% if is_center_user %}Customer{% else %}You{% endif %}</div>
                                     <div style="white-space: pre-wrap;">{{ m.text }}</div>
-                                    <div class="small opacity-75 mt-1">{{ m.created_at|date:"M d, h:i A" }}</div>
+                                    <div class="small opacity-75 mt-1 local-chat-time" data-utc="{{ m.created_at|date:'c' }}">{{ m.created_at|date:"M d, h:i A" }}</div>
                                 </div>
                             </div>
                         {% else %}
@@ -37,7 +37,7 @@
                                         {% if session.service_center %}{{ session.service_center.name }}{% else %}Service Center{% endif %}
                                     </div>
                                     <div style="white-space: pre-wrap;">{{ m.text }}</div>
-                                    <div class="small text-muted mt-1">{{ m.created_at|date:"M d, h:i A" }}</div>
+                                    <div class="small text-muted mt-1 local-chat-time" data-utc="{{ m.created_at|date:'c' }}">{{ m.created_at|date:"M d, h:i A" }}</div>
                                 </div>
                             </div>
                         {% endif %}
@@ -59,4 +59,26 @@
         </div>
     </div>
 </section>
+<script>
+    (function () {
+        var nodes = document.querySelectorAll('.local-chat-time[data-utc]');
+        nodes.forEach(function (node) {
+            var utcString = node.getAttribute('data-utc');
+            if (!utcString) {
+                return;
+            }
+            var dt = new Date(utcString);
+            if (isNaN(dt.getTime())) {
+                return;
+            }
+            node.textContent = dt.toLocaleString([], {
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        });
+    })();
+</script>
 {% endblock %}

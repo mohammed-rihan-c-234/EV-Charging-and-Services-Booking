@@ -89,8 +89,11 @@
                                         id="{{ form.center_phone.id_for_label }}"
                                         name="{{ form.center_phone.html_name }}"
                                         type="tel"
+                                        inputmode="numeric"
+                                        maxlength="10"
+                                        pattern="[0-9]{10}"
                                         value="{{ form.center_phone.value|default:'' }}"
-                                        placeholder="Enter center phone number"
+                                        placeholder="Enter 10-digit center phone number"
                                     >
                                     {% if form.center_phone.errors %}
                                         <div class="invalid-feedback d-block">
@@ -121,10 +124,10 @@
                             </div>
 
                             <div id="userFields">
-                                <!-- First Name Field -->
+                                <!-- Full Name Field -->
                                 <div class="mb-3">
                                     <label class="form-label" for="{{ form.full_name.id_for_label }}">
-                                        <i class="bi bi-person-badge"></i> First Name <span class="text-danger">*</span>
+                                        <i class="bi bi-person-badge"></i> Full Name <span class="text-danger">*</span>
                                     </label>
                                     <input
                                         class="form-control {% if form.full_name.errors %}is-invalid{% endif %}"
@@ -133,7 +136,7 @@
                                         type="text"
                                         value="{{ form.full_name.value|default:'' }}"
                                         autocomplete="name"
-                                        placeholder="Enter your first name"
+                                        placeholder="Enter your full name"
                                     >
                                     {% if form.full_name.errors %}
                                         <div class="invalid-feedback d-block">
@@ -142,8 +145,6 @@
                                         </div>
                                     {% endif %}
                                 </div>
-
-                                <!-- Phone Number Field -->
                                 <div class="mb-3">
                                     <label class="form-label" for="{{ form.phone_number.id_for_label }}">
                                         <i class="bi bi-telephone"></i> Phone Number <span class="text-danger">*</span>
@@ -153,13 +154,13 @@
                                         id="{{ form.phone_number.id_for_label }}"
                                         name="{{ form.phone_number.html_name }}"
                                         type="tel"
+                                        inputmode="numeric"
+                                        maxlength="10"
+                                        pattern="[0-9]{10}"
                                         value="{{ form.phone_number.value|default:'' }}"
                                         autocomplete="tel"
-                                        placeholder="Enter your phone number"
-                                        inputmode="numeric"
-                                        pattern="\\d{10}"
-                                        minlength="10"
-                                        maxlength="10"
+                                        placeholder="Enter 10-digit phone number"
+                                        required
                                     >
                                     {% if form.phone_number.errors %}
                                         <div class="invalid-feedback d-block">

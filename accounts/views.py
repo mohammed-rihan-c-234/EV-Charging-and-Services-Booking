@@ -6,7 +6,7 @@ from django.views.generic import CreateView, View
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
-from .forms import SignUpForm, UserProfileEditForm, ProfileEditForm
+from .forms import SignUpForm, ProfileEditForm, UserProfileEditForm
 from .models import Profile
 
 
@@ -59,17 +59,17 @@ def profile_edit(request):
         user_form = UserProfileEditForm(request.POST, instance=request.user)
         profile_form = ProfileEditForm(request.POST, instance=profile)
         if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save(commit=False)
+            user_form.save()
             updated_profile = profile_form.save(commit=False)
             if updated_profile.role == Profile.ROLE_SERVICE_CENTER:
-                user.first_name = ""
-                user.last_name = ""
+                request.user.first_name = ""
+                request.user.last_name = ""
             else:
                 full_name = (updated_profile.full_name or "").strip()
                 name_parts = full_name.split(" ", 1)
-                user.first_name = name_parts[0] if name_parts else ""
-                user.last_name = name_parts[1] if len(name_parts) > 1 else ""
-            user.save()
+                request.user.first_name = name_parts[0] if name_parts else ""
+                request.user.last_name = name_parts[1] if len(name_parts) > 1 else ""
+            request.user.save(update_fields=["first_name", "last_name"])
             updated_profile.save()
             messages.success(request, "Profile updated successfully.")
             return redirect("accounts:profile")
@@ -80,7 +80,7 @@ def profile_edit(request):
     return render(
         request,
         "accounts/profile_edit.html",
-        {"user_form": user_form, "profile_form": profile_form},
+        {"profile_form": profile_form, "user_form": user_form},
     )
 
 

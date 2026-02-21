@@ -1,10 +1,15 @@
-# Minimal requirements for the EV service project
-Django==4.2
-# You can add more packages later (djangorestframework, psycopg2, etc.)
+# Core web framework
+Django==4.2.20
+
+# Payments
 razorpay==1.4.2
+
+# Environment and deployment
 python-dotenv==1.0.1
 gunicorn==22.0.0
 whitenoise==6.7.0
-setuptools==75.8.0
 dj-database-url==2.2.0
 psycopg2-binary==2.9.9
+
+# Utilities used by project scripts
+pypdf==4.3.1

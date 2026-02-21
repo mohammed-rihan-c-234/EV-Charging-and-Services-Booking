@@ -100,7 +100,26 @@
         border-bottom: 1px solid rgba(255,255,255,0.04);
       }
       .navbar-brand{ font-weight:700; letter-spacing:0.2px; color: #fff !important; }
-      .navbar-nav .nav-link{ color: #fff !important; font-weight:500; }
+      .navbar-nav .nav-link{
+        color: #fff !important;
+        font-weight: 500;
+        position: relative;
+      }
+      .navbar-nav .nav-link::after{
+        content: '';
+        position: absolute;
+        left: 0.6rem;
+        right: 0.6rem;
+        bottom: 0.2rem;
+        height: 2px;
+        background: currentColor;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.2s ease;
+      }
+      .navbar-nav .nav-link.active::after{
+        transform: scaleX(1);
+      }
       .navbar .navbar-toggler-icon{ filter: invert(1) grayscale(1) contrast(120%); }
       /* Active pill style: white background, primary text */
       .nav-pills .nav-link.active{
@@ -171,7 +190,7 @@
               {% else %}
                 <li class="nav-item"><a class="nav-link {% active_nav '/vehicles/mine/' %}" href="/vehicles/mine/"><i class="bi bi-person-badge"></i>My Vehicles</a></li>
                 <li class="nav-item"><a class="nav-link {% active_nav '/bookings/mine/' %}" href="/bookings/mine/"><i class="bi bi-calendar-check"></i>My Bookings</a></li>
-                <li class="nav-item"><a class="nav-link {% active_nav '/charging/bookings/' %}" href="/charging/bookings/mine/"><i class="bi bi-plug-fill"></i>My Charging</a></li>
+                <li class="nav-item"><a class="nav-link {% active_nav '/charging/' %}" href="/charging/"><i class="bi bi-plug-fill"></i>Charging Stations</a></li>
                 <li class="nav-item"><a class="nav-link {% active_nav '/bookings/new/' %}" href="/bookings/new/"><i class="bi bi-calendar-plus"></i>Schedule</a></li>
                 <li class="nav-item"><a class="nav-link {% active_nav '/parts/cart/' %}" href="/parts/cart/"><i class="bi bi-cart"></i>Cart</a></li>
               {% endif %}
