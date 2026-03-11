@@ -43,3 +43,24 @@ def vehicle_create(request):
         form = VehicleForm()
 
     return render(request, "vehicles/vehicle_form.html", {"form": form, "mode": "create"})
+
+
+@login_required
+def vehicle_edit(request, pk):
+    vehicle = get_object_or_404(Vehicle.objects.for_user(request.user), pk=pk)
+    if request.method == "POST":
+        form = VehicleForm(request.POST, instance=vehicle)
+        if form.is_valid():
+            updated_vehicle = form.save(commit=False)
+            updated_vehicle.owner = request.user
+            try:
+                updated_vehicle.owner_name = request.user.profile.full_name  # type: ignore[attr-defined]
+            except Exception:
+                updated_vehicle.owner_name = request.user.username
+            updated_vehicle.save()
+            messages.success(request, "Vehicle updated successfully.")
+            return redirect("vehicles:detail", pk=updated_vehicle.pk)
+    else:
+        form = VehicleForm(instance=vehicle)
+
+    return render(request, "vehicles/vehicle_form.html", {"form": form, "mode": "edit", "vehicle": vehicle})

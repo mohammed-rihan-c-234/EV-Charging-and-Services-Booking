@@ -4,6 +4,7 @@
 {% block title %}EV Service Platform - Smart EV Assistance{% endblock %}
 
 {% block content %}
+{% url "accounts:login" as login_url %}
 
 <!-- Hero Section -->
 <section class="hero">
@@ -99,7 +100,7 @@
                         </div>
                         <h5 class="card-title">Emergency SOS</h5>
                         <p class="card-text text-muted">Quick access to emergency services with automatic location sharing. Get help within minutes.</p>
-                        <a href="/sos/" class="btn btn-sm btn-outline-primary">Learn More</a>
+                        <a href="{% if user.is_authenticated %}/sos/{% else %}{{ login_url }}?next=/sos/{% endif %}" class="btn btn-sm btn-outline-primary">Learn More</a>
                     </div>
                 </div>
             </div>
@@ -113,7 +114,7 @@
                         </div>
                         <h5 class="card-title">Charging Locator</h5>
                         <p class="card-text text-muted">Find nearby charging stations with real-time availability, pricing, and estimated charging time.</p>
-                        <a href="/charging/" class="btn btn-sm btn-outline-primary">Find Stations</a>
+                        <a href="{% if user.is_authenticated %}/charging/{% else %}{{ login_url }}?next=/charging/{% endif %}" class="btn btn-sm btn-outline-primary">Find Stations</a>
                     </div>
                 </div>
             </div>
@@ -127,7 +128,7 @@
                         </div>
                         <h5 class="card-title">Service Centers</h5>
                         <p class="card-text text-muted">Book appointments at authorized service centers and track your vehicle maintenance history.</p>
-                        <a href="/bookings/new/" class="btn btn-sm btn-outline-primary">Book Service</a>
+                        <a href="{% if user.is_authenticated %}/bookings/new/{% else %}{{ login_url }}?next=/bookings/new/{% endif %}" class="btn btn-sm btn-outline-primary">Book Service</a>
                     </div>
                 </div>
             </div>
@@ -141,7 +142,7 @@
                         </div>
                         <h5 class="card-title">Spare Parts</h5>
                         <p class="card-text text-muted">Order genuine spare parts with fast delivery and track your orders in real-time.</p>
-                        <a href="/spareparts/" class="btn btn-sm btn-outline-primary">Browse Parts</a>
+                        <a href="{% if user.is_authenticated %}/spareparts/{% else %}{{ login_url }}?next=/spareparts/{% endif %}" class="btn btn-sm btn-outline-primary">Browse Parts</a>
                     </div>
                 </div>
             </div>
@@ -155,7 +156,7 @@
                         </div>
                         <h5 class="card-title">24/7 Chat Support</h5>
                         <p class="card-text text-muted">Get instant help from our AI-powered chatbot or connect with support representatives anytime.</p>
-                        <a href="/chatbox/" class="btn btn-sm btn-outline-primary">Chat Now</a>
+                        <a href="{% if user.is_authenticated %}/chatbox/{% else %}{{ login_url }}?next=/chatbox/{% endif %}" class="btn btn-sm btn-outline-primary">Chat Now</a>
                     </div>
                 </div>
             </div>
@@ -169,7 +170,7 @@
                         </div>
                         <h5 class="card-title">Rewards Program</h5>
                         <p class="card-text text-muted">Earn points for eco-friendly driving and redeem them for discounts on services and parts.</p>
-                        <a href="/rewards/" class="btn btn-sm btn-outline-primary">View Rewards</a>
+                        <a href="{% if user.is_authenticated %}/rewards/{% else %}{{ login_url }}?next=/rewards/{% endif %}" class="btn btn-sm btn-outline-primary">View Rewards</a>
                     </div>
                 </div>
             </div>

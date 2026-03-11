@@ -65,4 +65,3 @@ class ChargingBooking(models.Model):
 
     class Meta:
         ordering = ["-scheduled_at", "-created_at"]
-

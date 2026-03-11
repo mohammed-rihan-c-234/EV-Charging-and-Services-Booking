@@ -12,6 +12,20 @@ from rewards.utils import award_points
 from rewards.models import RewardAccount
 
 
+def _handle_razorpay_api_error(request, exc, retry_url_name, **retry_kwargs):
+    error_text = (str(exc) or "").strip()
+    if "authentication failed" in error_text.lower():
+        messages.error(
+            request,
+            "Razorpay authentication failed. Update RAZORPAY_KEY_ID and "
+            "RAZORPAY_KEY_SECRET with a valid matching key pair, then restart the server.",
+        )
+    else:
+        fallback = "Razorpay request failed. Please try again."
+        messages.error(request, f"{fallback} ({error_text})" if settings.DEBUG and error_text else fallback)
+    return redirect(retry_url_name, **retry_kwargs)
+
+
 def station_list(request):
     stations = ChargingStation.objects.all()
     return render(request, 'charging/station_list.html', {'stations': stations})
@@ -161,12 +175,15 @@ def razorpay_payment(request, booking_id):
         payable_amount = Decimal("0.00")
     amount_display = payable_amount.quantize(Decimal("0.01"))
     amount_paise = int(amount_display * 100)
-    rp_order = client.order.create({
-        "amount": amount_paise,
-        "currency": "INR",
-        "receipt": f"charging_{booking.pk}",
-        "payment_capture": 1,
-    })
+    try:
+        rp_order = client.order.create({
+            "amount": amount_paise,
+            "currency": "INR",
+            "receipt": f"charging_{booking.pk}",
+            "payment_capture": 1,
+        })
+    except razorpay.errors.BadRequestError as exc:
+        return _handle_razorpay_api_error(request, exc, "charging:my_bookings")
     booking.razorpay_order_id = rp_order.get("id", "")
     booking.save(update_fields=["razorpay_order_id"])
 
@@ -210,6 +227,8 @@ def razorpay_verify(request, booking_id):
     except razorpay.errors.SignatureVerificationError:
         messages.error(request, "Payment verification failed. Please try again.")
         return redirect("charging:razorpay_payment", booking_id=booking_id)
+    except razorpay.errors.BadRequestError as exc:
+        return _handle_razorpay_api_error(request, exc, "charging:razorpay_payment", booking_id=booking_id)
 
     booking.payment_method = ChargingBooking.PAYMENT_METHOD_RAZORPAY
     booking.payment_status = ChargingBooking.PAYMENT_PAID

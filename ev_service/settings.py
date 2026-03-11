@@ -16,7 +16,7 @@ except Exception:
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 if load_dotenv is not None:
-    load_dotenv(BASE_DIR / ".env")
+    load_dotenv(BASE_DIR / ".env", override=True)
 
 def env_bool(value: str, default: bool = False) -> bool:
     if value is None:
@@ -143,5 +143,5 @@ LOGOUT_REDIRECT_URL = '/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Razorpay (test mode) - set in environment variables
-RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
-RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
+RAZORPAY_KEY_ID = (os.getenv("RAZORPAY_KEY_ID", "") or "").strip()
+RAZORPAY_KEY_SECRET = (os.getenv("RAZORPAY_KEY_SECRET", "") or "").strip()

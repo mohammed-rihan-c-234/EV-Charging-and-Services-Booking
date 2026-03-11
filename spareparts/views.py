@@ -13,6 +13,21 @@ from rewards.utils import award_points
 from rewards.models import RewardAccount
 import razorpay
 
+
+def _handle_razorpay_api_error(request, exc, retry_url_name, **retry_kwargs):
+    error_text = (str(exc) or "").strip()
+    if "authentication failed" in error_text.lower():
+        messages.error(
+            request,
+            "Razorpay authentication failed. Update RAZORPAY_KEY_ID and "
+            "RAZORPAY_KEY_SECRET with a valid matching key pair, then restart the server.",
+        )
+    else:
+        fallback = "Razorpay request failed. Please try again."
+        messages.error(request, f"{fallback} ({error_text})" if settings.DEBUG and error_text else fallback)
+    return redirect(retry_url_name, **retry_kwargs)
+
+
 def parts_list(request):
     parts = SparePart.objects.all()
     return render(request, 'spareparts/parts_list.html', {'parts': parts})
@@ -197,12 +212,15 @@ def razorpay_payment(request, pk):
     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
     amount_display = Decimal(order.total_amount).quantize(Decimal("0.01"))
     amount_paise = int(amount_display * 100)
-    rp_order = client.order.create({
-        "amount": amount_paise,
-        "currency": "INR",
-        "receipt": f"partorder_{order.pk}",
-        "payment_capture": 1,
-    })
+    try:
+        rp_order = client.order.create({
+            "amount": amount_paise,
+            "currency": "INR",
+            "receipt": f"partorder_{order.pk}",
+            "payment_capture": 1,
+        })
+    except razorpay.errors.BadRequestError as exc:
+        return _handle_razorpay_api_error(request, exc, "spareparts:checkout")
     order.razorpay_order_id = rp_order.get("id", "")
     order.save(update_fields=["razorpay_order_id"])
 
@@ -242,6 +260,8 @@ def razorpay_verify(request, pk):
     except razorpay.errors.SignatureVerificationError:
         messages.error(request, "Payment verification failed. Please try again.")
         return redirect("spareparts:razorpay_payment", pk=pk)
+    except razorpay.errors.BadRequestError as exc:
+        return _handle_razorpay_api_error(request, exc, "spareparts:razorpay_payment", pk=pk)
 
     order.payment_method = PartOrder.PAYMENT_METHOD_RAZORPAY
     order.payment_status = PartOrder.PAYMENT_PAID

@@ -34,6 +34,8 @@ class ServiceBookingForm(forms.ModelForm):
         self.fields["service_type"].widget.attrs.setdefault("class", "form-select")
         self.fields["service_center"].widget.attrs.setdefault("class", "form-select")
         self.fields["scheduled_for"].widget.attrs.setdefault("class", "form-control")
+        # Block previous date/time values in the calendar input.
+        self.fields["scheduled_for"].widget.attrs["min"] = timezone.localtime().strftime("%Y-%m-%dT%H:%M")
         self.fields["notes"].widget.attrs.setdefault("class", "form-control")
         self.fields["service_center"].queryset = ServiceCenter.objects.all().order_by("name")
         if user and getattr(user, "is_authenticated", False):
